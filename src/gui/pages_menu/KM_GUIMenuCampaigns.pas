@@ -16,15 +16,19 @@ type
 
     fCampaigns: TKMCampaignsCollection;
 
+    fCampaign: TKMCampaign;
+
     procedure ListChange(Sender: TObject);
     procedure StartClick(Sender: TObject);
     procedure BackClick(Sender: TObject);
+    procedure ReadmeClick(Sender: TObject);
   protected
     Panel_CampSelect: TKMPanel;
       ColumnBox_Camps: TKMColumnBox;
       Image_CampsPreview: TKMImage;
       Memo_CampDesc: TKMMemo;
-      Button_Camp_Start, Button_Camp_Back: TKMButton;
+      Button_Camp_Start, Button_Camp_Back, Button_Camp_Back_When_Readme: TKMButton;
+      Button_SetupReadme: TKMButton;
   public
     constructor Create(aParent: TKMPanel; aCampaigns: TKMCampaignsCollection; aOnPageChange: TKMMenuChangeEventText);
     procedure RefreshList;
@@ -83,6 +87,17 @@ begin
     Button_Camp_Back := TKMButton.Create(Panel_CampSelect, 362, 625, 300, 30, gResTexts[TX_MENU_BACK], bsMenu);
     Button_Camp_Back.AnchorsCenter;
     Button_Camp_Back.OnClick := BackClick;
+    Button_Camp_Back.Show;
+
+    Button_Camp_Back_When_Readme := TKMButton.Create(Panel_CampSelect, 362, 625+45, 300, 30, gResTexts[TX_MENU_BACK], bsMenu);
+    Button_Camp_Back_When_Readme.AnchorsCenter;
+    Button_Camp_Back_When_Readme.OnClick := BackClick;
+    Button_Camp_Back_When_Readme.Hide;
+
+    Button_SetupReadme := TKMButton.Create(Panel_CampSelect, 362, 625, 300, 30, gResTexts[TX_LOBBY_VIEW_README], bsMenu);
+    Button_SetupReadme.Anchors := [anLeft,anBottom];
+    Button_SetupReadme.OnClick := ReadmeClick;
+    Button_SetupReadme.Hide;
 end;
 
 
@@ -113,6 +128,11 @@ begin
 end;
 
 
+procedure TKMMenuCampaigns.ReadmeClick(Sender: TObject);
+begin
+    fCampaign.ViewReadme;
+end;
+
 procedure TKMMenuCampaigns.ListChange(Sender: TObject);
 var
   cmp: TKMCampaignId;
@@ -130,7 +150,17 @@ begin
     Button_Camp_Start.Enable;
     cmp := fCampaigns[ColumnBox_Camps.Rows[ColumnBox_Camps.ItemIndex].Tag].CampaignId;
     Camp := fCampaigns.CampaignById(cmp);
+    fCampaign := fCampaigns.CampaignById(cmp);
+    Button_SetupReadme.Hide;
+    Button_Camp_Back_When_Readme.Hide;
+    Button_Camp_Back.Show;
 
+    if fCampaign.HasReadme then
+    begin
+      Button_SetupReadme.Show;
+      Button_Camp_Back_When_Readme.Show;
+      Button_Camp_Back.Hide;
+    end;
     Image_CampsPreview.RX := Camp.BackGroundPic.RX;
     Image_CampsPreview.TexID := Camp.BackGroundPic.ID;
 

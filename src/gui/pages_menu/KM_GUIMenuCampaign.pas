@@ -31,6 +31,7 @@ type
     procedure Difficulty_Change(Sender: TObject);
     procedure AnimNodes(aTickCount: Cardinal);
     procedure PlayBriefingAudioTrack;
+    procedure ReadmeClick(Sender: TObject);
   protected
     Panel_Campaign: TKMPanel;
       Image_CampaignBG: TKMImage;
@@ -45,6 +46,7 @@ type
       Label_Difficulty: TKMLabel;
       DropBox_Difficulty: TKMDropList;
       Button_CampaignStart, Button_CampaignBack: TKMButton;
+          Button_SetupReadme: TKMButton;
   public
     OnNewCampaignMap: TKMNewCampaignMapEvent;
 
@@ -137,13 +139,18 @@ begin
   DropBox_Difficulty.OnChange := Difficulty_Change;
   DropBox_Difficulty.Hide;
 
-  Button_CampaignStart := TKMButton.Create(Panel_Campaign, aParent.Width-220-20, aParent.Height-50, 220, 30, gResTexts[TX_MENU_START_MISSION], bsMenu);
+  Button_CampaignStart := TKMButton.Create(Panel_Campaign, aParent.Width-220-20, aParent.Height-50, 200, 30, gResTexts[TX_MENU_START_MISSION], bsMenu);
   Button_CampaignStart.Anchors := [anLeft,anBottom];
   Button_CampaignStart.OnClick := StartClick;
 
   Button_CampaignBack := TKMButton.Create(Panel_Campaign, 20, aParent.Height-50, 220, 30, gResTexts[TX_MENU_BACK], bsMenu);
   Button_CampaignBack.Anchors := [anLeft,anBottom];
   Button_CampaignBack.OnClick := BackClick;
+
+  Button_SetupReadme := TKMButton.Create(Panel_Campaign, 20+200+40, aParent.Height-50, 220, 30, gResTexts[TX_LOBBY_VIEW_README], bsMenu);
+  Button_SetupReadme.Anchors := [anLeft,anBottom];
+  Button_SetupReadme.OnClick := ReadmeClick;
+  Button_SetupReadme.Hide;
 end;
 
 
@@ -160,7 +167,12 @@ begin
   Image_CampaignBG.TexID := fCampaign.BackGroundPic.ID;
 
   DropBox_Difficulty.Clear;
+  Button_SetupReadme.Hide;
 
+  if fCampaign.HasReadme then
+  begin
+    Button_SetupReadme.Show;
+  end;
   //Setup sites
   for I := 0 to High(Image_CampaignFlags) do
   begin
@@ -186,6 +198,11 @@ begin
 end;
 
 
+procedure TKMMenuCampaign.ReadmeClick(Sender: TObject);
+begin
+    fCampaign.ViewReadme;
+end;
+
 procedure TKMMenuCampaign.UpdateDifficultyLevel;
 var
   I: Integer;
@@ -197,6 +214,7 @@ begin
   if fCampaign.MapsInfo[fMapIndex].TxtInfo.HasDifficultyLevels then
   begin
     DiffLevels := fCampaign.MapsInfo[fMapIndex].TxtInfo.DifficultyLevels;
+    Button_SetupReadme.Hide;
 
     if gGameSettings.CampaignLastDifficulty in DiffLevels then
       OldMD := gGameSettings.CampaignLastDifficulty;

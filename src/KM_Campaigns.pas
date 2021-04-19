@@ -48,6 +48,7 @@ type
 
     fMapsProgressData: TKMCampaignMapProgressDataArray; //Map data, saved in campaign progress
 
+    function DetermineReadmeFilePath: String;
     function GetDefaultMissionTitle(aIndex: Byte): UnicodeString;
 
     procedure SetUnlockedMap(aValue: Byte);
@@ -82,6 +83,8 @@ type
     property MapsInfo: TKMCampaignMapDataArray read fMapsInfo;
     property MapsProgressData: TKMCampaignMapProgressDataArray read fMapsProgressData;
     property Viewed: Boolean read fViewed write fViewed;
+    function HasReadme: Boolean;
+    function ViewReadme: Boolean;
 
     function GetCampaignTitle: UnicodeString;
     function GetCampaignDescription: UnicodeString;
@@ -133,9 +136,9 @@ const
 
 implementation
 uses
-  SysUtils, Math, KromUtils,
+  SysUtils, Math, KromUtils, KromShellUtils,
   KM_GameParams, KM_Resource, KM_ResLocales, KM_ResSprites,
-  KM_Log, KM_Defaults;
+  KM_Log, KM_Defaults, KM_GameSettings;
 
 
 const
@@ -233,6 +236,39 @@ end;
 function TKMCampaignsCollection.GetCampaign(aIndex: Integer): TKMCampaign;
 begin
   Result := fList[aIndex];
+end;
+
+function TKMCampaign.DetermineReadmeFilePath: String;
+var
+  Path: String;
+begin
+  Result := '';
+  Path := fPath + 'Readme.' + String(gGameSettings.Locale) + '.pdf'; // Try to file with our locale first
+  if FileExists(Path) then
+    Result := Path
+  else
+  begin
+    Path := fPath + 'Readme.' + String(DEFAULT_LOCALE) + '.pdf'; // then with default locale
+    if FileExists(Path) then
+      Result := Path
+    else
+    begin
+      Path := fPath+'Readme.pdf'; // and finally without any locale
+      if FileExists(Path) then
+        Result := Path;
+    end;
+  end;
+end;
+
+
+function TKMCampaign.HasReadme: Boolean;
+begin
+  Result := DetermineReadmeFilePath <> '';
+end;
+
+function TKMCampaign.ViewReadme: Boolean;
+begin
+  Result := OpenPDF(DetermineReadmeFilePath);
 end;
 
 

@@ -3,7 +3,7 @@ unit KM_GUIMenuSingleMap;
 interface
 uses
   Controls, Math, SysUtils,
-  KM_Defaults, KM_Console,
+  KM_Defaults,
   KM_Maps, KM_MapTypes, KM_GameTypes,
   KM_Controls, KM_Pics, KM_InterfaceDefaults, KM_InterfaceTypes, KM_Minimap, KM_CommonTypes;
 
@@ -93,8 +93,7 @@ type
 
 implementation
 uses
-  KM_ResTexts, KM_CommonUtils, KM_RenderUI, KM_ResFonts, KM_GameSettings,
-  KM_Networking;
+  KM_ResTexts, KM_CommonUtils, KM_RenderUI, KM_ResFonts, KM_GameSettings;
 
 const
   PAD_VERT = 44; //Padding from top/bottom
