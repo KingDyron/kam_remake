@@ -49,6 +49,9 @@ type
     fMapsProgressData: TKMCampaignMapProgressDataArray; //Map data, saved in campaign progress
 
     function DetermineReadmeFilePath: String;
+    function DetermineMapReadmeFilePath(aIndex : Byte): String;
+
+
     function GetDefaultMissionTitle(aIndex: Byte): UnicodeString;
 
     procedure SetUnlockedMap(aValue: Byte);
@@ -66,6 +69,7 @@ type
       NodeCount: Byte;
       Nodes: array [0 .. MAX_CAMP_NODES - 1] of TKMPointW;
       TextPos: TKMBriefingCorner;
+      aPDFPath: UnicodeString;
     end;
     constructor Create;
     destructor Destroy; override;
@@ -85,6 +89,8 @@ type
     property Viewed: Boolean read fViewed write fViewed;
     function HasReadme: Boolean;
     function ViewReadme: Boolean;
+    function MapHasReadme(aIndex : Byte): Boolean;
+    function MapViewReadme(aIndex : Byte): Boolean;
 
     function GetCampaignTitle: UnicodeString;
     function GetCampaignDescription: UnicodeString;
@@ -261,6 +267,29 @@ begin
 end;
 
 
+function TKMCampaign.DetermineMapReadmeFilePath(aIndex : Byte): String;
+var
+  Path: String;
+begin
+  Result := '';
+  Path := fPath + GetMissionName(aIndex) + PathDelim + 'Readme.' + String(gGameSettings.Locale) + '.pdf'; // Try to file with our locale first
+  if FileExists(Path) then
+    Result := Path
+  else
+  begin
+    Path := fPath + GetMissionName(aIndex) + PathDelim + 'Readme.' + String(DEFAULT_LOCALE) + '.pdf'; // then with default locale
+    if FileExists(Path) then
+      Result := Path
+    else
+    begin
+      Path := fPath + GetMissionName(aIndex) + PathDelim + 'Readme.pdf'; // and finally without any locale
+      if FileExists(Path) then
+        Result := Path;
+    end;
+  end;
+end;
+
+
 function TKMCampaign.HasReadme: Boolean;
 begin
   Result := DetermineReadmeFilePath <> '';
@@ -271,6 +300,17 @@ begin
   Result := OpenPDF(DetermineReadmeFilePath);
 end;
 
+
+
+function TKMCampaign.MapHasReadme(aIndex : Byte): Boolean;
+begin
+   Result := DetermineMapReadmeFilePath(aIndex) <>'';
+end;
+
+function TKMCampaign.MapViewReadme(aIndex : Byte): Boolean;
+begin
+  Result := OpenPDF(DetermineMapReadmeFilePath(aIndex));
+end;
 
 //Read progress from file trying to find matching campaigns
 procedure TKMCampaignsCollection.LoadProgress(const aFileName: UnicodeString);
@@ -472,6 +512,7 @@ begin
   begin
     M.Read(Maps[I].Flag);
     M.Read(Maps[I].NodeCount);
+    Maps[I].aPDFPath := GetMissionFile( I, '.pdf');
     for K := 0 to Maps[I].NodeCount - 1 do
       M.Read(Maps[I].Nodes[K]);
     M.Read(Maps[I].TextPos, SizeOf(TKMBriefingCorner));
@@ -535,12 +576,12 @@ begin
     else
       fMapsInfo[I].TxtInfo.ResetInfo;
     fMapsInfo[I].TxtInfo.LoadTXTInfo(GetMissionFile(I, '.txt'));
-
     fMapsInfo[I].MissionName := '';
     //Load mission name from mission Libx library
     TextMission := TKMTextLibraryMulti.Create;
     try
       TextMission.LoadLocale(GetMissionFile(I, '.%s.libx'));
+
       if TextMission.HasText(MISSION_NAME_LIBX_ID) then
         fMapsInfo[I].MissionName := StringReplace(TextMission[MISSION_NAME_LIBX_ID], '|', ' ', [rfReplaceAll]); //Replace | with space
     finally

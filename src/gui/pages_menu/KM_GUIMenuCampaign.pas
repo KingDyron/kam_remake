@@ -4,7 +4,7 @@ interface
 uses
   Classes, Controls, SysUtils, Math,
   KM_Controls, KM_Pics, KM_MapTypes, KM_CampaignTypes, KM_GameTypes,
-  KM_Campaigns, KM_InterfaceDefaults, KM_InterfaceTypes;
+  KM_Campaigns, KM_InterfaceDefaults, KM_InterfaceTypes, KM_Maps;
 
 
 type
@@ -16,6 +16,7 @@ type
 
     fCampaignId: TKMCampaignId;
     fCampaign: TKMCampaign;
+
     fMapIndex: Byte;
     fAnimNodeIndex : Byte;
 
@@ -32,6 +33,7 @@ type
     procedure AnimNodes(aTickCount: Cardinal);
     procedure PlayBriefingAudioTrack;
     procedure ReadmeClick(Sender: TObject);
+    procedure HideButtons(Sender: TObject);
   protected
     Panel_Campaign: TKMPanel;
       Image_CampaignBG: TKMImage;
@@ -46,7 +48,9 @@ type
       Label_Difficulty: TKMLabel;
       DropBox_Difficulty: TKMDropList;
       Button_CampaignStart, Button_CampaignBack: TKMButton;
-          Button_SetupReadme: TKMButton;
+      Button_SetupReadme: TKMButton;
+      Button_ShowButtons: TKMButton;
+      Extra_Button_CampaignBack: TKMButtonFlat;
   public
     OnNewCampaignMap: TKMNewCampaignMapEvent;
 
@@ -64,7 +68,8 @@ type
 
 implementation
 uses
-  KM_Audio, KM_GameSettings, KM_ResTexts, KM_RenderUI, KM_ResFonts, KM_Music, KM_Sound, KM_ResSound, KM_Defaults, KM_Video;
+  KM_Audio, KM_GameSettings, KM_ResTexts, KM_RenderUI, KM_ResFonts, KM_Music, KM_Sound, KM_ResSound, KM_Defaults,
+  KM_Video;
 
 const
   FLAG_LABEL_OFFSET_X = 10;
@@ -143,7 +148,7 @@ begin
   Button_CampaignStart.Anchors := [anLeft,anBottom];
   Button_CampaignStart.OnClick := StartClick;
 
-  Button_CampaignBack := TKMButton.Create(Panel_Campaign, 20, aParent.Height-50, 220, 30, gResTexts[TX_MENU_BACK], bsMenu);
+  Button_CampaignBack := TKMButton.Create(Panel_Campaign, 45, aParent.Height-50, 220, 30, gResTexts[TX_MENU_BACK], bsMenu);
   Button_CampaignBack.Anchors := [anLeft,anBottom];
   Button_CampaignBack.OnClick := BackClick;
 
@@ -151,6 +156,17 @@ begin
   Button_SetupReadme.Anchors := [anLeft,anBottom];
   Button_SetupReadme.OnClick := ReadmeClick;
   Button_SetupReadme.Hide;
+
+  Button_ShowButtons := TKMButton.Create(Panel_Campaign, 15, aParent.Height-42, 15, 15, '-', bsMenu);
+  Button_ShowButtons.Anchors := [anLeft,anBottom];
+  Button_ShowButtons.Hint := 'Show/Hide buttons';
+  Button_ShowButtons.OnClick := HideButtons;
+
+  Extra_Button_CampaignBack := TKMButtonFlat.Create(Panel_Campaign, 45, aParent.Height-50, 30, 30, 678, rxGui);
+  Button_CampaignBack.Anchors := [anLeft,anBottom];
+  Extra_Button_CampaignBack.Hint := gResTexts[TX_MENU_TAB_HINT_GO_BACK];
+  Extra_Button_CampaignBack.OnClick := BackClick;
+  Extra_Button_CampaignBack.Hide;
 end;
 
 
@@ -161,7 +177,6 @@ var
   I: Integer;
 begin
   fCampaign := fCampaigns.CampaignById(fCampaignId);
-
   //Choose background
   Image_CampaignBG.RX := fCampaign.BackGroundPic.RX;
   Image_CampaignBG.TexID := fCampaign.BackGroundPic.ID;
@@ -169,10 +184,6 @@ begin
   DropBox_Difficulty.Clear;
   Button_SetupReadme.Hide;
 
-  if fCampaign.HasReadme then
-  begin
-    Button_SetupReadme.Show;
-  end;
   //Setup sites
   for I := 0 to High(Image_CampaignFlags) do
   begin
@@ -195,14 +206,85 @@ begin
 
   //Select last map, no brifing will be played, since its set as
   SelectMap(fCampaign.UnlockedMap);
+
+  if fCampaign.MapHasReadme(fMapIndex) then
+  begin
+    Button_SetupReadme.Show;
+  end;
 end;
 
 
 procedure TKMMenuCampaign.ReadmeClick(Sender: TObject);
 begin
-    fCampaign.ViewReadme;
+    fCampaign.MapViewReadme(fMapIndex);
 end;
 
+procedure TKMMenuCampaign.HideButtons(Sender: TObject);
+var I :Integer;
+begin
+  if Button_ShowButtons.Caption='-' then begin
+
+    Button_ShowButtons.Caption := '+';
+    Button_SetupReadme.Hide;
+    Button_CampaignBack.Hide;
+    Button_CampaignStart.Hide;
+    DropBox_Difficulty.Hide;
+    Image_ScrollRestore.Hide;
+    Label_Difficulty.Hide;
+    Label_CampaignText.Hide;
+    Image_Scroll.Hide;
+    Image_ScrollClose.Hide;
+    Label_CampaignTitle.Hide;
+    Extra_Button_CampaignBack.Show;
+
+    for I := 0 to High(Image_CampaignFlags) do
+    begin
+      Label_CampaignFlags[I].Hide;
+      Image_CampaignFlags[I].Hide;
+    end;
+    for I := 0 to High(Image_CampaignSubNode) do
+    begin
+      Image_CampaignSubNode[I].Hide;
+    end;
+  end else
+  begin
+    Button_ShowButtons.Caption := '-';
+    Button_SetupReadme.Show;
+    Button_CampaignBack.Show;
+    Button_CampaignStart.Show;
+    DropBox_Difficulty.Show;
+    Image_ScrollRestore.Show;
+    Label_Difficulty.Show;
+    Label_CampaignText.Show;
+    Image_Scroll.Show;
+    Image_ScrollClose.Show;
+    Label_CampaignTitle.Show;
+    Extra_Button_CampaignBack.Hide;
+
+    if fCampaign.MapHasReadme(fMapIndex) then
+    begin
+      Button_SetupReadme.Show;
+    end;
+
+    for I := 0 to High(Image_CampaignFlags) do
+    begin
+      Label_CampaignFlags[I].Show;
+      Image_CampaignFlags[I].Show;
+    end;
+    for I := 0 to High(Image_CampaignSubNode) do
+    begin
+      Image_CampaignSubNode[I].Show;
+    end;
+    DropBox_Difficulty.Show;
+    Image_ScrollRestore.Show;
+
+    UpdateDifficultyLevel;
+    SelectMap(fMapIndex);
+
+    DropBox_Difficulty.Clear;
+    Button_SetupReadme.Hide;
+  end;
+end;
 procedure TKMMenuCampaign.UpdateDifficultyLevel;
 var
   I: Integer;
@@ -211,10 +293,9 @@ var
 begin
   //Difficulty levels
   OldMD := mdNone;
-  if fCampaign.MapsInfo[fMapIndex].TxtInfo.HasDifficultyLevels then
+  if (fCampaign.MapsInfo[fMapIndex].TxtInfo.HasDifficultyLevels) and (Button_ShowButtons.Caption='-') then
   begin
     DiffLevels := fCampaign.MapsInfo[fMapIndex].TxtInfo.DifficultyLevels;
-    Button_SetupReadme.Hide;
 
     if gGameSettings.CampaignLastDifficulty in DiffLevels then
       OldMD := gGameSettings.CampaignLastDifficulty;
@@ -345,7 +426,7 @@ begin
   if not InRange(fAnimNodeIndex, 0, fCampaign.Maps[fMapIndex].NodeCount-1) then Exit;
   if (aTickCount mod CAMP_NODE_ANIMATION_PERIOD) <> 0 then Exit;
   if Image_CampaignSubNode[fAnimNodeIndex].Visible then Exit;
-  Image_CampaignSubNode[fAnimNodeIndex].Visible := true;
+  if Button_ShowButtons.Caption='-' then Image_CampaignSubNode[fAnimNodeIndex].Visible := true;
   inc(fAnimNodeIndex);
 end;
 
