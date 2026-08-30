@@ -336,7 +336,7 @@ begin
                               then
                               begin
                                 Damage := 1;
-                                If fType = ptCatapultRock then Damage := 20;
+                                If fType = ptCatapultRock then Damage := 10;
                                 If fType = ptBallistaBolt then Damage := 2;
 
                                 H.AddDamage(Damage, fOwner);

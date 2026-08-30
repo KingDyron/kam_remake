@@ -180,6 +180,12 @@ begin
               // Shooting range is not important now, houses don't walk (except Howl's Moving Castle perhaps)
               //todo -cComplicated: Rogue should launch rock part on ROGUE_FIRING_DELAY like they do in ActionFight (animation looks wrong now)
               gProjectiles.AimTargetHouse(PositionF, fHouse, ProjectileType, fUnit, RangeMax, RangeMin);
+              //catapult throws 2 more rocks
+              If fUnit.UnitType = utCatapult then
+              begin
+                gProjectiles.AimTargetHouse(PositionF, fHouse, ProjectileType, fUnit, RangeMax, RangeMin);
+                gProjectiles.AimTargetHouse(PositionF, fHouse, ProjectileType, fUnit, RangeMax, RangeMin);
+              end;
 
               SetLastShootTime; //Record last time the warrior shot
               AnimLength := gRes.Units[UnitType].UnitAnim[uaWork, Direction].Count;

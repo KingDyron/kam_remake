@@ -263,6 +263,11 @@ begin
 
     // Fire the arrow
     gProjectiles.AimTargetUnit(fUnit.PositionF, fOpponent, W.ProjectileType, fUnit, W.RangeMax, W.RangeMin);
+    If W.UnitType = utCatapult then
+    begin
+      gProjectiles.AimTargetUnit(fUnit.PositionF, fOpponent, W.ProjectileType, fUnit, W.RangeMax, W.RangeMin);
+      gProjectiles.AimTargetUnit(fUnit.PositionF, fOpponent, W.ProjectileType, fUnit, W.RangeMax, W.RangeMin);
+    end;
 
     fFightDelay := -1; //Reset
   end;
