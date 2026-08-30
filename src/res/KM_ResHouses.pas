@@ -432,7 +432,7 @@ const
     ),
     ( //Siege workshop
     PlanYX:           ((0,0,0,0), (0,0,0,0), (0,1,1,1), (0,2,1,1));
-    NeedsPlayerOrder: True;
+    NeedsPlayerOrder: False;
     BuildIcon:        324;
     TabletSpriteId:   274;
     Input:            (wtTimber,       wtIron,      wtNone,       wtNone);

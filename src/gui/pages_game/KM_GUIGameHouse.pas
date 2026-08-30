@@ -581,7 +581,7 @@ begin
   top := 20;
   for I := 0 to 1 do
   begin
-    Ut := SiegeWorkshop_Order[I];
+    Ut := MACHINES_ORDER[I + 1];
 
     Image_MachineScroll[I] := TKMImage.Create(Panel_HouseSiegeWorkshop,
                                           (I mod 2) * (TB_WIDTH div 2) + 11,//left

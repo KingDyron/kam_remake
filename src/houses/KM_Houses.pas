@@ -135,7 +135,6 @@ type
     fWareOut: array [1..4] of Word; //Resource count in output
     fWareOrder: array [1..4] of Word; //If HousePlaceOrders=True then here are production orders
     fWareOutPool: array[0..19] of Byte;
-    fLastOrderProduced: Byte;
 //    fWareOrderDesired: array [1..4] of Single;
 
     fIsOnSnow: Boolean;
@@ -147,8 +146,6 @@ type
     fTimeSinceUnoccupiedReminder: Integer;
     fDisableUnoccupiedMessage: Boolean;
     fResourceDepletedMsgIssued: Boolean;
-    fOrderCompletedMsgIssued: Boolean;
-    fNeedIssueOrderCompletedMsg: Boolean;
     fPlacedOverRoad: Boolean; //Is house entrance placed over road
 
     fOnShowGameMessage: TKMGameShowMessageEvent;
@@ -165,9 +162,11 @@ type
     procedure UpdateDeliveryMode;
     function GetHasWorker: Boolean;
 
-    procedure ShowMsg(aTextID: Integer);
   protected
     fBuildState: TKMHouseBuildState; // = (hbsGlyph, hbsNoGlyph, hbsWood, hbsStone, hbsDone);
+    fLastOrderProduced: Byte;//needed for subclass (TKMHouseSiegeWorkshop)
+    fOrderCompletedMsgIssued: Boolean;//needed for subclass (TKMHouseSiegeWorkshop)
+    fNeedIssueOrderCompletedMsg: Boolean;//needed for subclass (TKMHouseSiegeWorkshop)
     FlagAnimStep: Cardinal; //Used for Flags and Burning animation
     //WorkAnimStep: Cardinal; //Used for Work and etc.. which is not in sync with Flags
     procedure Activate(aWasBuilt: Boolean); virtual;
@@ -204,6 +203,7 @@ type
 
     procedure MakeSound; virtual; //Swine/stables make extra sounds
     function GetWareDistribution(aID: Byte): Word; virtual; //Will use GetRatio from mission settings to find distribution amount
+    procedure ShowMsg(aTextID: Integer); //needed for subclass (TKMHouseSiegeWorkshop)
   public
     CurrentAction: TKMHouseAction; //Current action, within HouseTask or idle
     WorkAnimStep: Cardinal; //Used for Work and etc.. which is not in sync with Flags
@@ -298,7 +298,7 @@ type
 
     function CheckWareIn(aWare: TKMWareType): Word; virtual;
     function CheckWareOut(aWare: TKMWareType): Word; virtual;
-    function PickOrder: Byte;
+    function PickOrder: Byte; virtual;
     function CheckResToBuild: Boolean;
     function GetMaxInWare: Word;
     procedure WareAddToIn(aWare: TKMWareType; aCount: Integer = 1; aFromStaticScript: Boolean = False); virtual; //override for School and etc..

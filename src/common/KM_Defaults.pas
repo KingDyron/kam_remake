@@ -670,6 +670,8 @@ const
   CITIZENS_CNT = Integer(CITIZEN_MAX) - Integer(CITIZEN_MIN) + 1;
   WARRIORS_CNT = Integer(WARRIOR_MAX) - Integer(WARRIOR_MIN) + 1;
 
+  MACHINES_ORDER: array[1..2] of TKMUnitType = ( utCatapult, utBallista );
+
 type
   TKMCheckAxis = (axX, axY);
 
@@ -763,7 +765,8 @@ type
     gsFisherCatch,
     gsStoneCutter,
     gsCoalMiner, gsGoldMiner, gsIronMiner,
-    gsHorseBreeder, gsSwineBreeder);
+    gsHorseBreeder, gsSwineBreeder,
+    gsSiegeCarpenter);
 
 {Houses in game}
 type

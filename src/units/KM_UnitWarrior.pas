@@ -581,7 +581,8 @@ end;
 procedure TKMUnitWarrior.SetActionGoIn(aAction: TKMUnitActionType; aGoDir: TKMGoInDirection; aHouse: TKMHouse);
 begin
   Assert(aGoDir = gdGoOutside, 'Walking inside is not implemented yet');
-  Assert((aHouse.HouseType = htBarracks) or (aHouse.HouseType = htTownHall), 'Only Barracks and TownHall so far');
+  Assert((aHouse.HouseType = htBarracks) or (aHouse.HouseType = htTownHall) or (aHouse.HouseType = htSiegeWorkshop),
+        'Only Barracks, TownHall and Siege Workshop so far');
   inherited;
 
   TKMUnitActionGoInOut(Action).OnWalkedOut := WalkedOut;

@@ -35,6 +35,7 @@ type
 implementation
 uses
   KM_Houses, KM_HouseWoodcutters, KM_HouseSwineStable,
+  KM_HouseSiegeWorkshop,
   KM_HandsCollection, KM_HandTypes, KM_HandEntity,
   KM_Resource, KM_ResMapElements, KM_ResTexts,
   KM_Hand, KM_ResUnits, KM_ScriptingEvents, KM_Terrain;
@@ -407,6 +408,10 @@ begin
               gsIronMiner:    ResAcquired := gTerrain.DecOreDeposit(WorkPlan.Loc, wtIronOre);
               gsSwineBreeder: ResAcquired := fBeastID <> 0;
               gsHorseBreeder: ResAcquired := fBeastID <> 0;
+              gsSiegeCarpenter: begin
+                                  ResAcquired := false;
+                                  TKMHouseSiegeWorkshop(Home).FinishOrder(WorkPlan.OrderID);
+                                end;
               else            ResAcquired := True;
             end;
 

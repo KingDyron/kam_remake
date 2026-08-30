@@ -141,10 +141,6 @@ const
   TownHall_Order: array [0..4] of TKMUnitType = (
     utRebel, utRogue, utVagabond, utBarbarian, utWarrior);
 
-  SiegeWorkshop_Order: array[0..1] of TKMUnitType = (
-    utCatapult, utBallista
-  );
-
   Soldiers_Order: array[0..15] of TKMUnitType = (
     utMilitia, utAxeFighter, utSwordFighter, utBowman, utCrossbowman,
     utLanceCarrier, utPikeman, utScout, utKnight,

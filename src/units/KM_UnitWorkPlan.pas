@@ -42,6 +42,7 @@ type
     Product2: TKMWareType; ProdCount2: Byte;
     AfterWorkIdle: Integer;
     ResourceDepleted: Boolean;
+    OrderID : Byte;
   public
     procedure FindPlan(aUnit: TKMUnit; aHome: TKMHouseType; aProduct: TKMWareType;
                        aLoc: TKMPoint; aPlantAct: TKMPlantAct);
@@ -55,7 +56,7 @@ type
 implementation
 uses
   SysUtils,
-  KM_ResUnits, KM_Houses, KM_HouseWoodcutters,
+  KM_ResUnits, KM_Houses, KM_HouseWoodcutters, KM_HouseSiegeWorkshop,
   KM_ResHouses,
   KM_Terrain,
   KM_Resource, KM_CommonUtils;
@@ -448,7 +449,26 @@ begin
                         end;
                         SubActAdd(haWork5,1);
                         fIssued := True;
+                      end else
+
+                      if (aHome = htSiegeWorkshop) then
+                      begin
+                        OrderID := aUnit.Home.PickOrder;
+                        ResourcePlan(wtTimber,5,wtIron,5,wtNone);
+                        for I := 1 to 6 do
+                        begin
+                          SubActAdd(haWork2,3);
+                          SubActAdd(haWork3,1);
+                          SubActAdd(haWork4,1);
+                        end;
+                        SubActAdd(haWork2,1);
+                        SubActAdd(haWork3,1);
+
+                        GatheringScript := gsSiegeCarpenter;
+                        fIssued := OrderID > 0;
+
                       end;
+
     utBaker:         if aHome = htMill then
                       begin
                         ResourcePlan(wtCorn,1,wtNone,0,wtFlour);
@@ -646,6 +666,7 @@ begin
   LoadStream.Read(ProdCount2);
   LoadStream.Read(AfterWorkIdle);
   LoadStream.Read(ResourceDepleted);
+  LoadStream.Read(OrderID);
 end;
 
 
@@ -682,6 +703,7 @@ begin
   SaveStream.Write(ProdCount2);
   SaveStream.Write(AfterWorkIdle);
   SaveStream.Write(ResourceDepleted);
+  SaveStream.Write(OrderID);
 end;
 
 
