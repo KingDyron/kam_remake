@@ -56,7 +56,7 @@ uses
   KM_Game, KM_GameParams, KM_GameUIDTracker, KM_Terrain,
   KM_HandTypes, KM_HandEntity,
   KM_HouseInn, KM_HouseMarket, KM_HouseBarracks, KM_HouseSchool, KM_HouseStore, KM_HouseArmorWorkshop, KM_HouseSwineStable,
-  KM_HouseTownHall, KM_HouseWoodcutters,
+  KM_HouseTownHall, KM_HouseWoodcutters, KM_HouseSiegeWorkshop,
   KM_Resource, KM_ResHouses,
   KM_GameTypes;
 
