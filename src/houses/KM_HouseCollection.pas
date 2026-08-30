@@ -110,6 +110,7 @@ begin
     htWatchTower:    Result := TKMHouseTower.Create(uid, aHouseType,aPosX,aPosY, aOwner, aHBS);
     htWoodcutters:   Result := TKMHouseWoodcutters.Create(uid, aHouseType,aPosX,aPosY, aOwner, aHBS);
     htArmorWorkshop: Result := TKMHouseArmorWorkshop.Create(uid, aHouseType,aPosX,aPosY, aOwner, aHBS);
+    htSiegeWorkshop: Result := TKMHouseSiegeWorkshop.Create(uid, aHouseType,aPosX,aPosY, aOwner, aHBS);
   else
     Result := TKMHouse.Create(uid, aHouseType,aPosX,aPosY, aOwner, aHBS);
   end;
@@ -393,6 +394,7 @@ begin
       htWoodcutters:   H := TKMHouseWoodcutters.Load(LoadStream);
       htArmorWorkshop: H := TKMHouseArmorWorkshop.Load(LoadStream);
       htTownHall:      H := TKMHouseTownHall.Load(LoadStream);
+      htSiegeWorkshop: H := TKMHouseSiegeWorkshop.Load(LoadStream);
     else
       H := TKMHouse.Load(LoadStream);
     end;
