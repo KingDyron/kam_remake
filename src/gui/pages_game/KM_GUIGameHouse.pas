@@ -4,7 +4,7 @@ interface
 uses
   StrUtils, SysUtils, Math, Classes,
   KM_Controls, KM_ControlsBase, KM_ControlsProgressBar, KM_ControlsSwitch, KM_ControlsWaresRow,
-  KM_CommonClasses, KM_CommonTypes, KM_Pics,
+  KM_CommonClasses, KM_CommonTypes, KM_Pics, KM_ControlsEdit,
   KM_InterfaceGame, KM_Houses, KM_HouseMarket;
 
 
@@ -25,6 +25,7 @@ type
     procedure Create_HouseStore;
     procedure Create_HouseWoodcutter;
     procedure Create_HouseArmorWorkshop;
+    procedure Create_HouseSiegeWorkshop;
 
     procedure House_Demolish(Sender: TObject; Shift: TShiftState);
     procedure House_RepairToggle(Sender: TObject);
@@ -61,6 +62,7 @@ type
     procedure ShowCommonOrders(aHouse: TKMHouse; Base: Integer; var Line: Integer; var RowRes: Integer);
     procedure ShowTownHall(aHouse: TKMHouse);
     procedure ShowArmorWorkshop(aHouse: TKMHouse);
+    procedure ShowSiegeWorkshop(aHouse: TKMHouse);
 
     function GetEquipAmount(Shift: TShiftState): Integer;
   protected
@@ -129,6 +131,11 @@ type
       Label_ArmorWS_Demand: TKMLabel;
       WaresRow_ArmorWS_Common: array [1..2] of TKMWaresRow; //2 bars
       Image_ArmorWS_Accept: array [1..2] of TKMImage;
+    Panel_HouseSiegeWorkshop: TKMPanel;
+      //demands will be handled by defealt
+      Image_MachineScroll: array[0..1] of TKMImage;
+      NumEdit_MachinesOrder: array[0..1] of TKMNumericEdit;
+
   public
     AskDemolish: Boolean;
     OnHouseDemolish: TBooleanEvent;
@@ -258,6 +265,7 @@ begin
   Create_HouseTownhall;
   Create_HouseWoodcutter;
   Create_HouseArmorWorkshop;
+  Create_HouseSiegeWorkshop;
 end;
 
 
@@ -558,6 +566,35 @@ begin
     end;
 end;
 
+{SiegeWorkshop page}
+procedure TKMGUIGameHouse.Create_HouseSiegeWorkshop;
+var I : Integer;
+  UT : TKMUnitType;
+  top : Integer;
+begin
+  Panel_HouseSiegeWorkshop := TKMPanel.Create(Panel_House, 0, 0, TB_WIDTH, 200);
+  top := 0;
+  TKMLabel.Create(Panel_HouseSiegeWorkshop, 0, top, TB_WIDTH, 20, 'Constructs:', fntMetal, taCenter);
+  top := 20;
+  for I := Low(Image_MachineScroll) to High(Image_MachineScroll) do
+  begin
+    Ut := SiegeWorkshop_Order[I];
+
+    Image_MachineScroll[I] := TKMImage.Create(Panel_HouseSiegeWorkshop,
+                                          (I mod 2) * (TB_WIDTH div 2) + 11,//left
+                                          top + (I div 2) * 130,//top
+                                          64, 100,//size
+                                          gRes.Units[UT].GUIScroll);
+
+    NumEdit_MachinesOrder[I] := TKMNumericEdit.Create(Panel_HouseSiegeWorkshop,
+                                          (I mod 2) * (TB_WIDTH div 2),//left
+                                          top + 105 + (I div 2) * 130,//top
+                                          0, 5);
+    NumEdit_MachinesOrder[I].Width := 86;
+  end;
+  Panel_HouseSiegeWorkshop.Height := NumEdit_MachinesOrder[high(NumEdit_MachinesOrder)].Bottom;
+end;
+
 procedure TKMGUIGameHouse.Show(aHouse: TKMHouse);
 begin
   Show(aHouse, AskDemolish);
@@ -735,6 +772,7 @@ begin
                       end;
     htArmorWorkshop:  ShowArmorWorkshop(aHouse);
     htTownHall:       ShowTownHall(aHouse);
+    htSiegeWorkshop:  ShowSiegeWorkshop(aHouse);
   else
     //First thing - hide everything
     for I := 0 to Panel_House_Common.ChildCount - 1 do
@@ -975,6 +1013,31 @@ begin
   ShowCommonOrders(aHouse, base, line, rowRes);
 end;
 
+procedure TKMGUIGameHouse.ShowSiegeWorkshop(aHouse: TKMHouse);
+var
+  I, rowRes, base, line: Integer;
+begin
+  //Now show only what we need
+
+  //First thing - hide everything
+  for I := 0 to Panel_House_Common.ChildCount - 1 do
+    Panel_House_Common.Childs[I].Hide;
+
+  rowRes := 1;
+  line := 0;
+  base := 2;
+  ShowCommonDemand(aHouse, base, line, rowRes);
+  Panel_HouseSiegeWorkshop.Top := 76 + base + line * LINE_HEIGHT;
+  for I := Low(Image_MachineScroll) to High(Image_MachineScroll) do
+  begin
+    Image_MachineScroll[I].FlagColor := gHands[aHouse.Owner].GameFlagColor;
+    //NumEdit_MachinesOrder[I]
+  end;
+
+
+
+  Panel_HouseSiegeWorkshop.Show;
+end;
 
 function TKMGUIGameHouse.GetEquipAmount(Shift: TShiftState): Integer;
 begin

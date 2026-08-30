@@ -121,6 +121,7 @@ type
   protected
     procedure SetLeft(aValue: Integer); override;
     procedure SetTop(aValue: Integer); override;
+    procedure SetWidth(aValue: Integer); override;
     procedure SetEnabled(aValue: Boolean); override;
     procedure SetVisible(aValue: Boolean); override;
     procedure SetHint(const aValue: UnicodeString); override;
@@ -886,6 +887,13 @@ begin
 
   fButtonDec.Top := Top;
   fButtonInc.Top := Top;
+end;
+
+procedure TKMNumericEdit.SetWidth(aValue: Integer);
+begin
+  inherited;
+  fButtonDec.Left := Left;
+  fButtonInc.Left := Left + Width - 20;
 end;
 
 
