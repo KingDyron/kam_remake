@@ -387,6 +387,8 @@ begin
   case fUnitType of
     utNone, utAny:  Result := 0;
     utBarbarian:    Result := 70;
+    utCatapult,
+    utBallista: Result := 141; //temporary icon
   else
     if IsCitizen then
       Result := 141 + UNIT_TYPE_TO_ID[fUnitType]

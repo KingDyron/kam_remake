@@ -10,9 +10,10 @@ type
 
   TKMHouseSiegeWorkshop = class(TKMHouseWFlagPoint)
   private
-    fStoredMachines : array of TKMUnitType;
-    fStoredCount : Word;
+    fStoredMachines : array[1..2] of Word;
     procedure ConstructSiege(aUnitType : TKMunitType);
+    function GetSiegeMachineIndex(aUnitType : TKMunitType) : Integer;
+    function GetStoredMachines(aIndex : Integer) : Word;
   protected
 
   public
@@ -23,6 +24,9 @@ type
     function HasOrders : Boolean;
     procedure FinishOrder(aOrderID : Byte);
     function PickOrder : Byte; override;
+    function SiegeEquip(aUnitType : TKMunitType; aAmount : Integer): Integer;
+
+    property StoredMachines[aIndex : Integer] : Word read GetStoredMachines;
 
     function ObjToString(const aSeparator: string = '|'): string; override;
   end;
@@ -40,6 +44,9 @@ uses
 constructor TKMHouseSiegeWorkshop.Create(aUID: Integer; aHouseType: TKMHouseType; PosX, PosY: Integer; aOwner: TKMHandID; aBuildState: TKMHouseBuildState);
 begin
   inherited;
+
+  fStoredMachines[1] := 0;
+  fStoredMachines[2] := 0;
 end;
 
 
@@ -68,17 +75,50 @@ begin
 
 end;
 
+function TKMHouseSiegeWorkshop.GetSiegeMachineIndex(aUnitType: TKMUnitType): Integer;
+begin
+  Assert(aUnitType in [utCatapult, utBallista], 'Unknown machine');
+  Result := -1;
+  case aUnitType of
+    utCatapult: Result := 1;
+    utBallista: Result := 2;
+  end;
+
+end;
+
+function TKMHouseSiegeWorkshop.GetStoredMachines(aIndex : Integer) : Word;
+begin
+  Assert(aIndex in [1..2]);
+  Result := fStoredMachines[aIndex];
+end;
 
 procedure TKMHouseSiegeWorkshop.ConstructSiege(aUnitType: TKMUnitType);
+begin
+  Inc(fStoredMachines[GetSiegeMachineIndex(aUnitType)]);
+end;
+
+function TKMHouseSiegeWorkshop.SiegeEquip(aUnitType: TKMUnitType; aAmount : Integer): Integer;
 var
   newWarrior: TKMUnitWarrior;
+  I, index : Integer;
 begin
+  Result := 0;
   // Make new siege machine
-  newWarrior := TKMUnitWarrior(gHands[Owner].TrainUnit(aUnitType, Self));
-  newWarrior.Visible := False; //Make him invisible as he is inside the barracks
-  newWarrior.SetActionGoIn(uaWalk, gdGoOutside, Self);
-  if Assigned(newWarrior.OnUnitTrained) then
-    newWarrior.OnUnitTrained(newWarrior);
+  index := GetSiegeMachineIndex(aUnitType);
+  for I := 1 to aAmount do
+  If fStoredMachines[index] > 0 then
+  begin
+    newWarrior := TKMUnitWarrior(gHands[Owner].TrainUnit(aUnitType, Self));
+    Assert(newWarrior <> nil, 'Somehow siege machine was not created');
+    newWarrior.Visible := False; //Make him invisible as he is inside the barracks
+    newWarrior.SetActionGoIn(uaWalk, gdGoOutside, Self);
+    if Assigned(newWarrior.OnUnitTrained) then
+      newWarrior.OnUnitTrained(newWarrior);
+    Dec(fStoredMachines[index]);
+    Inc(Result);
+  end else
+    Break;
+
 end;
 
 

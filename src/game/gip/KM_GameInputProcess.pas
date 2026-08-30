@@ -95,6 +95,7 @@ type
     gicHouseRemoveTrain,                //Remove unit being trained from School
     gicHouseWoodcuttersCutting,         //Set the cutting point for the Woodcutters
     gicHouseSiegeWorkshopRally,              //Set the rally point for the TownHall
+    gicHouseSiegeWorkshopEquip,               //Place an order to manufacture warfare
 
     //V.     Delivery ratios changes (and other game-global settings)
     gicWareDistributionChange,   //Change of distribution for 1 ware
@@ -213,7 +214,8 @@ const
     gicHouseTownHallMaxGold,
     gicHouseRemoveTrain,
     gicHouseWoodcuttersCutting,
-    gicHouseSiegeWorkshopRally];
+    gicHouseSiegeWorkshopRally,
+    gicHouseSiegeWorkshopEquip];
 
   COMMAND_IS_GAMESTATE_NEUTRAL: set of TKMGameInputCommandType = [
     gicGameAutoSave,
@@ -274,6 +276,7 @@ const
     gicpt_Int2,     // gicHouseRemoveTrain
     gicpt_Int3,     // gicHouseWoodcuttersCutting
     gicpt_Int3,     //gicHouseSiegeWorkshopRally
+    gicpt_Int3,     //gicHouseSiegeWorkshopEquip
     //V.     Delivery ratios changes (and other game-global settings)
     gicpt_Int3,     // gicWareDistributionChange
     gicpt_AnsiStr1, // gicWareDistributions
@@ -965,7 +968,8 @@ begin
       gicHouseBarracksAcceptFlag, gicHouseBarracksAcceptAllFlag, gicHBarracksNotAllowTakeOutFlag, gicHBarracksNotAllowTakeOutAllFlag,
       gicHouseBarracksEquip, gicHouseTownHallEquip, gicHouseClosedForWorkerTgl,
       gicHouseSchoolTrain, gicHouseSchoolTrainChOrder, gicHouseSchoolTrainChLastUOrder, gicHouseRemoveTrain,
-      gicHouseWoodcutterMode, gicHBarracksAcceptRecruitsTgl, gicHouseArmorWSDeliveryToggle, gicHouseSiegeWorkshopRally] then
+      gicHouseWoodcutterMode, gicHBarracksAcceptRecruitsTgl, gicHouseArmorWSDeliveryToggle, gicHouseSiegeWorkshopRally,
+      gicHouseSiegeWorkshopEquip] then
     begin
       srcHouse := gHands.GetHouseByUID(IntParams[0]);
       if (srcHouse = nil) or srcHouse.IsDestroyed //House has been destroyed before command could be executed
@@ -1055,6 +1059,7 @@ begin
         gicHouseWoodcuttersCutting:         TKMHouseWoodcutters(srcHouse).FlagPoint := KMPoint(IntParams[1], IntParams[2]);
         gicHouseArmorWSDeliveryToggle:      TKMHouseArmorWorkshop(srcHouse).ToggleResDelivery(TKMWareType(IntParams[1]));
         gicHouseSiegeWorkshopRally:         TKMHouseSiegeWorkshop(srcHouse).FlagPoint := KMPoint(IntParams[1], IntParams[2]);
+        gicHouseSiegeWorkshopEquip:         TKMHouseSiegeWorkshop(srcHouse).SiegeEquip(MACHINES_ORDER[IntParams[1]], IntParams[2]);
 
         gicWareDistributionChange:  begin
                                       P.Stats.WareDistribution[TKMWareType(IntParams[0]), TKMHouseType(IntParams[1])] := IntParams[2];
@@ -1277,7 +1282,7 @@ end;
 
 procedure TKMGameInputProcess.CmdHouse(aCommandType: TKMGameInputCommandType; aHouse: TKMHouse; aItem, aAmountChange: Integer);
 begin
-  Assert(aCommandType in [gicHouseOrderProduct, gicHouseSchoolTrainChOrder]);
+  Assert(aCommandType in [gicHouseOrderProduct, gicHouseSchoolTrainChOrder, gicHouseSiegeWorkshopEquip]);
   TakeCommand(MakeCommand(aCommandType, aHouse.UID, aItem, aAmountChange));
 end;
 

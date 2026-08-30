@@ -138,6 +138,8 @@ type
       NumEdit_MachineOrderRem,
       NumEdit_MachineOrderAdd: array[0..1] of TKMButton;
       Label_MachineOrderCnt: array[0..1] of TKMLabel;
+      Button_StoredMachinesCnt: array[0..1] of TKMButtonFlat;
+      Button_StoredMachinesEquip: array[0..1] of TKMButton;
 
   public
     AskDemolish: Boolean;
@@ -166,6 +168,7 @@ uses
   KM_Defaults, KM_Utils, KM_UtilsExt, KM_Points,
   KM_Game, KM_GameInputProcess, KM_Hand, KM_InterfaceTypes,
   KM_HouseBarracks, KM_HouseSchool, KM_HouseTownHall, KM_HouseWoodcutters, KM_HouseStore, KM_HouseArmorWorkshop,
+  KM_HouseSiegeWorkshop,
   KM_HandsCollection, KM_HandTypes, KM_HandEntity, KM_RenderUI,
   KM_Resource, KM_ResFonts, KM_ResHouses, KM_ResKeys, KM_ResTexts, KM_ResUnits, KM_ResWares, KM_ResTypes;
 
@@ -578,7 +581,7 @@ begin
   Panel_HouseSiegeWorkshop := TKMPanel.Create(Panel_House, 0, 0, TB_WIDTH, 200);
   top := 0;
   TKMLabel.Create(Panel_HouseSiegeWorkshop, 0, top, TB_WIDTH, 20, 'Constructs:', fntMetal, taCenter);
-  top := 20;
+  top := 18;
   for I := 0 to 1 do
   begin
     Ut := MACHINES_ORDER[I + 1];
@@ -611,9 +614,29 @@ begin
                                           20 + (I mod 2) * (TB_WIDTH div 2),//left
                                           top + 105 + (I div 2) * 130,//top
                                           46, 20, '0', fntGrey, taCenter);
-
   end;
-  Panel_HouseSiegeWorkshop.Height := 135;
+
+  top := 145;
+  TKMLabel.Create(Panel_HouseSiegeWorkshop, 0, top, TB_WIDTH, 20, 'Constructed:', fntMetal, taCenter);
+  top := 163;
+  for I := 0 to 1 do
+  begin
+    Ut := MACHINES_ORDER[I + 1];
+    Button_StoredMachinesCnt[I] := TKMButtonFlat.Create(Panel_HouseSiegeWorkshop,
+                                          28 + (I mod 2) * (TB_WIDTH div 2),//left
+                                          top + (I div 2) * 130,
+                                          34, 36, gRes.Units[UT].GUIIcon);
+
+    Button_StoredMachinesEquip[I] := TKMButton.Create(Panel_HouseSiegeWorkshop,
+                                                      18 + (I mod 2) * (TB_WIDTH div 2),//left
+                                                      top + 40 + (I div 2) * 130,
+                                                      54,40,
+                                                      42, rxGui, bsGame);
+
+     Button_StoredMachinesEquip[I].OnClickShift := House_SiegeWorkshopChange;
+  end;
+
+  Panel_HouseSiegeWorkshop.Height := 150;
 end;
 
 procedure TKMGUIGameHouse.Show(aHouse: TKMHouse);
@@ -959,6 +982,7 @@ end;
 
 
 procedure TKMGUIGameHouse.UpdateHotkeys;
+var I : Integer;
 begin
   // School
   Button_School_Left.Hint := GetHintWHotkey(TX_HOUSE_SCHOOL_PREV_HINT, kfTrainGotoPrev);
@@ -986,6 +1010,12 @@ begin
     Button_TH_Train.Hint := GetHintWHotkey(TX_HOUSE_BARRACKS_TRAIN_HINT, kfTrainEquipUnit)
   else
     Button_TH_Train.Hint := gResTexts[TX_HOUSE_BARRACKS_TRAIN_DISABLED_HINT];
+
+  for I := 0 to 1 do
+    if not gMySpectator.Hand.Locks.GetUnitBlocked(MACHINES_ORDER[I + 1]) then
+      Button_StoredMachinesEquip[I].Hint := gResTexts[TX_HOUSE_BARRACKS_TRAIN_DISABLED_HINT]
+    else
+      Button_StoredMachinesEquip[I].Hint := gResTexts[TX_HOUSE_BARRACKS_TRAIN_DISABLED_HINT];
 end;
 
 
@@ -1037,13 +1067,14 @@ end;
 procedure TKMGUIGameHouse.ShowSiegeWorkshop(aHouse: TKMHouse);
 var
   I, rowRes, base, line: Integer;
+  siegeWorkshop : TKMHouseSiegeWorkshop;
 begin
   //Now show only what we need
 
   //First thing - hide everything
   for I := 0 to Panel_House_Common.ChildCount - 1 do
     Panel_House_Common.Childs[I].Hide;
-
+  siegeWorkshop := TKMHouseSiegeWorkshop(aHouse);
   rowRes := 1;
   line := 0;
   base := 2;
@@ -1053,6 +1084,7 @@ begin
   begin
     Image_MachineScroll[I].FlagColor := gHands[aHouse.Owner].GameFlagColor;
     Label_MachineOrderCnt[I].Caption := aHouse.WareOrder[I + 1].ToString;
+    Button_StoredMachinesCnt[I].Caption := IntToStr(siegeWorkshop.StoredMachines[I + 1]);
   end;
 
 
@@ -1578,14 +1610,14 @@ var
 begin
   SW := TKMHouse(gMySpectator.Selected);
   for I := 0 to 1 do
+    If Sender = Button_StoredMachinesEquip[I] then
+      gGame.GameInputProcess.CmdHouse(gicHouseSiegeWorkshopEquip, SW, I + 1, GetMultiplicator(Shift))
+    else
     If Sender = NumEdit_MachineOrderAdd[I] then
       gGame.GameInputProcess.CmdHouse(gicHouseOrderProduct, SW, I + 1, GetMultiplicator(Shift))
     else
     If Sender = NumEdit_MachineOrderRem[I] then
       gGame.GameInputProcess.CmdHouse(gicHouseOrderProduct, SW, I + 1, -GetMultiplicator(Shift));
-
-
-
 
 end;
 
