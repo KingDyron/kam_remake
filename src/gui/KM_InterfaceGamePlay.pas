@@ -387,7 +387,8 @@ uses
   KM_Entity,
   KM_GameInputProcess, KM_GameInputProcess_Multi, KM_AI, KM_RenderUI, KM_Cursor, KM_Maps,
   KM_HandsCollection, KM_Hand,
-  KM_RenderPool, KM_ResTexts, KM_Game, KM_GameApp, KM_HouseBarracks, KM_HouseTownHall,
+  KM_RenderPool, KM_ResTexts, KM_Game, KM_GameApp,
+  KM_HouseBarracks, KM_HouseTownHall, KM_HouseSiegeWorkshop,
   KM_ScriptingEvents, KM_AIFields, KM_GameAppSettings, KM_GameSettings,
   KM_ControlsDragger,
   KM_CommonUtils, KM_ResLocales, KM_ResSound, KM_Resource, KM_Log, KM_ResKeys,
@@ -774,6 +775,9 @@ begin
       else
       if gMySpectator.Selected is TKMHouseTownHall then
         gGame.GameInputProcess.CmdHouse(gicHouseTownHallRally, TKMHouse(gMySpectator.Selected), loc)
+      else
+      if gMySpectator.Selected is TKMHouseSiegeWorkshop then
+        gGame.GameInputProcess.CmdHouse(gicHouseSiegeWorkshopRally, TKMHouse(gMySpectator.Selected), loc)
       else
         if gMySpectator.Selected is TKMHouseWoodcutters then
           gGame.GameInputProcess.CmdHouse(gicHouseWoodcuttersCutting, TKMHouse(gMySpectator.Selected), loc);
@@ -4072,6 +4076,7 @@ begin
         if not fPlacingBeacon
           and ((gMySpectator.Selected is TKMHouseBarracks)
             or (gMySpectator.Selected is TKMHouseTownHall)
+            or (gMySpectator.Selected is TKMHouseSiegeWorkshop)
             or (gMySpectator.Selected is TKMHouseWoodcutters))
           and (fUIMode in [umSP, umMP])
           and not HasLostMPGame then
@@ -4086,6 +4091,9 @@ begin
             else
             if gMySpectator.Selected is TKMHouseTownHall then
               gGame.GameInputProcess.CmdHouse(gicHouseTownHallRally, TKMHouse(gMySpectator.Selected), P)
+            else
+            if gMySpectator.Selected is TKMHouseSiegeWorkshop then
+              gGame.GameInputProcess.CmdHouse(gicHouseSiegeWorkshopRally, TKMHouse(gMySpectator.Selected), P)
             else
               if gMySpectator.Selected is TKMHouseWoodcutters then
                 gGame.GameInputProcess.CmdHouse(gicHouseWoodcuttersCutting, TKMHouse(gMySpectator.Selected), P);

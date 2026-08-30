@@ -677,6 +677,7 @@ begin
     htBarracks:     Result := 249;
     htTownHall:     Result := 249;
     htWoodcutters:  Result := 660;
+    htSiegeWorkshop:Result := 660;//temporary icon
   else
     Result := 0; // Has no such thing
   end;
