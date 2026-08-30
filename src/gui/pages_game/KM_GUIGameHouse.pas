@@ -56,6 +56,7 @@ type
     procedure House_WoodcutterClick(Sender: TObject; Shift: TShiftState);
     procedure House_WoodcutterChange(Sender: TObject);
     procedure House_ArmorWSDeliveryToggle(Sender: TObject);
+    procedure House_SiegeWorkshopChange(Sender: TObject; Shift: TShiftState);
 
     procedure ShowCommonDemand(aHouse: TKMHouse; Base: Integer; var Line: Integer; var RowRes: Integer);
     procedure ShowCommonOutput(aHouse: TKMHouse; Base: Integer; var Line: Integer; var RowRes: Integer);
@@ -134,7 +135,9 @@ type
     Panel_HouseSiegeWorkshop: TKMPanel;
       //demands will be handled by defealt
       Image_MachineScroll: array[0..1] of TKMImage;
-      NumEdit_MachinesOrder: array[0..1] of TKMNumericEdit;
+      NumEdit_MachineOrderRem,
+      NumEdit_MachineOrderAdd: array[0..1] of TKMButton;
+      Label_MachineOrderCnt: array[0..1] of TKMLabel;
 
   public
     AskDemolish: Boolean;
@@ -576,7 +579,7 @@ begin
   top := 0;
   TKMLabel.Create(Panel_HouseSiegeWorkshop, 0, top, TB_WIDTH, 20, 'Constructs:', fntMetal, taCenter);
   top := 20;
-  for I := Low(Image_MachineScroll) to High(Image_MachineScroll) do
+  for I := 0 to 1 do
   begin
     Ut := SiegeWorkshop_Order[I];
 
@@ -585,14 +588,32 @@ begin
                                           top + (I div 2) * 130,//top
                                           64, 100,//size
                                           gRes.Units[UT].GUIScroll);
+    Image_MachineScroll[I].Hint := gRes.Units[UT].GUIName;
 
-    NumEdit_MachinesOrder[I] := TKMNumericEdit.Create(Panel_HouseSiegeWorkshop,
+
+    NumEdit_MachineOrderRem[I] := TKMButton.Create(Panel_HouseSiegeWorkshop,
                                           (I mod 2) * (TB_WIDTH div 2),//left
                                           top + 105 + (I div 2) * 130,//top
-                                          0, 5);
-    NumEdit_MachinesOrder[I].Width := 86;
+                                          20, 20, '-', bsGame);
+    NumEdit_MachineOrderRem[I].Tag := I + 1;
+    NumEdit_MachineOrderRem[I].Hint := gResTexts[TX_HOUSE_ORDER_DEC_HINT];
+    NumEdit_MachineOrderRem[I].OnClickShift := House_SiegeWorkshopChange;
+
+    NumEdit_MachineOrderAdd[I] := TKMButton.Create(Panel_HouseSiegeWorkshop,
+                                          66 + (I mod 2) * (TB_WIDTH div 2),//left
+                                          top + 105 + (I div 2) * 130,//top
+                                          20, 20, '+', bsGame);
+    NumEdit_MachineOrderAdd[I].Tag := I + 1;
+    NumEdit_MachineOrderAdd[I].Hint := gResTexts[TX_HOUSE_ORDER_INC_HINT];
+    NumEdit_MachineOrderAdd[I].OnClickShift := House_SiegeWorkshopChange;
+
+    Label_MachineOrderCnt[I] := TKMLabel.Create(Panel_HouseSiegeWorkshop,
+                                          20 + (I mod 2) * (TB_WIDTH div 2),//left
+                                          top + 105 + (I div 2) * 130,//top
+                                          46, 20, '0', fntGrey, taCenter);
+
   end;
-  Panel_HouseSiegeWorkshop.Height := NumEdit_MachinesOrder[high(NumEdit_MachinesOrder)].Bottom;
+  Panel_HouseSiegeWorkshop.Height := 135;
 end;
 
 procedure TKMGUIGameHouse.Show(aHouse: TKMHouse);
@@ -1031,7 +1052,7 @@ begin
   for I := Low(Image_MachineScroll) to High(Image_MachineScroll) do
   begin
     Image_MachineScroll[I].FlagColor := gHands[aHouse.Owner].GameFlagColor;
-    //NumEdit_MachinesOrder[I]
+    Label_MachineOrderCnt[I].Caption := aHouse.WareOrder[I + 1].ToString;
   end;
 
 
@@ -1548,6 +1569,24 @@ begin
 
     Image_ArmorWS_Accept[I].Visible := not armorWS.AcceptWareForDelivery(gRes.Houses[htArmorWorkshop].WareInput[I]);
   end;
+end;
+
+procedure TKMGUIGameHouse.House_SiegeWorkshopChange(Sender: TObject; Shift: TShiftState);
+var
+  I: Integer;
+  SW: TKMHouse;
+begin
+  SW := TKMHouse(gMySpectator.Selected);
+  for I := 0 to 1 do
+    If Sender = NumEdit_MachineOrderAdd[I] then
+      gGame.GameInputProcess.CmdHouse(gicHouseOrderProduct, SW, I + 1, GetMultiplicator(Shift))
+    else
+    If Sender = NumEdit_MachineOrderRem[I] then
+      gGame.GameInputProcess.CmdHouse(gicHouseOrderProduct, SW, I + 1, -GetMultiplicator(Shift));
+
+
+
+
 end;
 
 
