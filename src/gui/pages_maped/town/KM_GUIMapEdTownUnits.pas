@@ -17,7 +17,7 @@ type
     Panel_Units: TKMPanel;
       Button_UnitCancel: TKMButtonFlat;
       Button_Citizen: array [0..13] of TKMButtonFlat;
-      Button_Warriors: array [0..13] of TKMButtonFlat;
+      Button_Warriors: array [0..15] of TKMButtonFlat;
       Button_Animals: array [0..7] of TKMButtonFlat;
       NumEd_WarrCount, NumEd_WarrColumns: TKMNumericEdit;  //number of units in group + number of rows
       NumEd_FishCount: TKMNumericEdit;
@@ -83,7 +83,7 @@ begin
     Button_Warriors[I].OnClick := Town_UnitChange;
   end;
 
-  lineY := 258;
+  lineY := 295;
 
   with TKMLabel.Create(Panel_Units, 9, lineY, Panel_Units.Width, 20, gResTexts[TX_MAPED_UNITS_FORMATION_NUMBER], fntMetal, taLeft) do
   begin
@@ -111,7 +111,7 @@ begin
   NumEd_WarrColumns.OnChange := Town_NumericChange;
   NumEd_WarrColumns.Value := 1;
 
-  lineY := 310;
+  lineY := 347;
 
   for I := 0 to High(Button_Animals) do
   begin
@@ -121,7 +121,7 @@ begin
     Button_Animals[I].OnClick := Town_UnitChange;
   end;
 
-  lineY := 390;
+  lineY := 427;
 
   with TKMLabel.Create(Panel_Units, 9, lineY, Panel_Units.Width - TB_PAD, 20, gResTexts[TX_MAPED_FISH_COUNT], fntMetal, taLeft) do
   begin

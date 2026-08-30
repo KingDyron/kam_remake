@@ -65,14 +65,14 @@ uses
 
 
 const
-  PROJECTILE_LAUNCH_SOUND: array[TKMProjectileType] of TKMSoundEffectOriginal = (sfxBowShoot, sfxCrossbowShoot, sfxNone, sfxRockThrow);
-  PROJECTILE_HIT_SOUND:   array[TKMProjectileType] of TKMSoundEffectOriginal = (sfxArrowHit, sfxArrowHit, sfxArrowHit, sfxNone);
-  PROJECTILE_SPEED: array[TKMProjectileType] of Single = (0.75, 0.75, 0.6, 0.8);
-  PROJECTILE_ARC: array[TKMProjectileType,1..2] of Single = ((1.6, 0.5), (1.4, 0.4), (2.5, 1), (1.2, 0.2)); //Arc curve and random fraction
-  PROJECTILE_JITTER: array[TKMProjectileType] of Single = (0.26, 0.29, 0.26, 0.2); //Fixed Jitter added every time
-  PROJECTILE_JITTER_HOUSE: array[TKMProjectileType] of Single = (0.6, 0.6, 0.6, 0); //Fixed Jitter added every time
+  PROJECTILE_LAUNCH_SOUND: array[TKMProjectileType] of TKMSoundEffectOriginal = (sfxBowShoot, sfxCrossbowShoot, sfxNone, sfxRockThrow, sfxCatapultShoot, sfxBalistaShoot);
+  PROJECTILE_HIT_SOUND:   array[TKMProjectileType] of TKMSoundEffectOriginal = (sfxArrowHit, sfxArrowHit, sfxArrowHit, sfxNone, sfxSiegeBuildingSmash, sfxSiegeBuildingSmash);
+  PROJECTILE_SPEED: array[TKMProjectileType] of Single = (0.75, 0.75, 0.6, 0.8, 0.75, 1);
+  PROJECTILE_ARC: array[TKMProjectileType,1..2] of Single = ((1.6, 0.5), (1.4, 0.4), (2.5, 1), (1.2, 0.2), (2.5, 1), (1.2, 0.3)); //Arc curve and random fraction
+  PROJECTILE_JITTER: array[TKMProjectileType] of Single = (0.26, 0.29, 0.26, 0.2, 0.35, 0.19); //Fixed Jitter added every time
+  PROJECTILE_JITTER_HOUSE: array[TKMProjectileType] of Single = (0.6, 0.6, 0.6, 0, 0.8, 0.4); //Fixed Jitter added every time
   // Jitter added according to target's speed (moving target harder to hit) Note: Walking = 0.1, so the added jitter is 0.1*X
-  PROJECTILE_PREDICT_JITTER: array[TKMProjectileType] of Single = (2, 2, 2, 3);
+  PROJECTILE_PREDICT_JITTER: array[TKMProjectileType] of Single = (2, 2, 2, 3, 2, 2);
 
 
 { TKMProjectiles }
@@ -220,26 +220,26 @@ const
   // TowerRock position is a bit different for reasons said below
   // Recruit stands in entrance, Tower middleline is X-0.75
   OFFSET_X: array [TKMDirection] of array [TKMProjectileType] of Single =
-    ((0.5, 0.5, 0.5, -0.25),  // dirNA
-     (0.5, 0.5, 0.7, -0.25),  // dirN
-     (1.0, 0.5, 0.7, -0.25),  // dirNE
-     (0.7, 0.5, 0.7, -0.25),  // dirE
-     (0.7, 0.5, 0.7, -0.25),  // dirSE
-     (0.4, 0.4, 0.3, -0.25),  // dirS
-     (0.4, 0.4, 0.5, -0.25),  // dirSW
-     (0.4, 0.4, 0.5, -0.25),  // dirW
-     (0.3, 0.5, 0.5, -0.25)); // dirNW
+    ((0.5, 0.5, 0.5, -0.25,    0,     0),  // dirNA
+     (0.5, 0.5, 0.7, -0.25, 0.47,  0.45),  // dirN
+     (1.0, 0.5, 0.7, -0.25, 0.87,     1),  // dirNE
+     (0.7, 0.5, 0.7, -0.25,    1,   1.5),  // dirE
+     (0.7, 0.5, 0.7, -0.25,  0.8,   1.1),  // dirSE
+     (0.4, 0.4, 0.3, -0.25, 0.47,  0.52),  // dirS
+     (0.4, 0.4, 0.5, -0.25, 0.17,  -0.1),  // dirSW
+     (0.4, 0.4, 0.5, -0.25, 0.05,  -0.6),  // dirW
+     (0.3, 0.5, 0.5, -0.25, 0.05, -0.15)); // dirNW
   // Add towers height
   OFFSET_Y: array [TKMDirection] of array [TKMProjectileType] of Single =
-    ((0.2, 0.2, 0.2, -0.2),  // dirNA
-     (0.2, 0.2, 0.2, -0.2),  // dirN
-     (0.0, 0.6, 0.5, -0.2),  // dirNE
-     (0.3, 0.35,0.3, -0.2),  // dirE
-     (0.5, 0.4, 0.5, -0.2),  // dirSE
-     (0.3, 0.2, 0.4, -0.2),  // dirS
-     (0.4, 0.4, 0.2, -0.2),  // dirSW
-     (0.2, 0.3, 0.3, -0.2),  // dirW
-     (0.1, 0.3, 0.3, -0.2)); // dirNW
+    ((0.2, 0.2, 0.2, -0.2,    0,    0),  // dirNA
+     (0.2, 0.2, 0.2, -0.2,    0, -0.1),  // dirN
+     (0.0, 0.6, 0.5, -0.2,    0,  0.1),  // dirNE
+     (0.3, 0.35,0.3, -0.2, -0.1,  0.5),  // dirE
+     (0.5, 0.4, 0.5, -0.2,  0.1, 0.87),  // dirSE
+     (0.3, 0.2, 0.4, -0.2, -0.1,  1.0),  // dirS
+     (0.4, 0.4, 0.2, -0.2,    0, 0.92),  // dirSW
+     (0.2, 0.3, 0.3, -0.2,    0, 0.45),  // dirW
+     (0.1, 0.3, 0.3, -0.2, -0.2, 0.05)); // dirNW
 var
   I: Integer;
 begin
@@ -306,6 +306,8 @@ begin
           if (U = nil) or ((1 - Math.Min(KMLength(U.PositionF, fTarget), 1)) > KaMRandom({$IFDEF DBG_RNG_SPY}'TKMProjectiles.UpdateState'{$ENDIF})) then
           begin
             case fType of
+              ptBallistaBolt,
+              ptCatapultRock,
               ptArrow,
               ptSlingRock,
               ptBolt:      if (U <> nil) and not U.IsDeadOrDying and U.Visible and not (U is TKMUnitAnimal)
@@ -313,10 +315,15 @@ begin
                             and (KMLengthSqr(fShotFrom, U.PositionF) <= Sqr(fMaxLength)) then
                             begin
                               Damage := 0;
-                              if fType = ptArrow then Damage := gRes.Units[utBowman].Attack;
-                              if fType = ptBolt then Damage := gRes.Units[utCrossbowman].Attack;
-                              if fType = ptSlingRock then Damage := gRes.Units[utRogue].Attack;
-                              Damage := Round(Damage / Math.max(gRes.Units[U.UnitType].GetDefenceVsProjectiles(fType = ptBolt), 1)); //Max is not needed, but animals have 0 defence
+                              if fType = ptArrow then         Damage := gRes.Units[utBowman].Attack;
+                              if fType = ptBolt then          Damage := gRes.Units[utCrossbowman].Attack;
+                              if fType = ptSlingRock then     Damage := gRes.Units[utRogue].Attack;
+                              if fType = ptCatapultRock then  Damage := gRes.Units[utCatapult].Attack;
+                              if fType = ptBallistaBolt then  Damage := gRes.Units[utBallista].Attack;
+
+                              IF fType <> ptBallistaBolt then //ignore defence for ballista, so there is like 90% to hit a unit
+                                Damage := Round(Damage / Math.max(gRes.Units[U.UnitType].GetDefenceVsProjectiles(fType = ptBolt), 1)); //Max is not needed, but animals have 0 defence
+
                               if (FRIENDLY_FIRE or (gHands.CheckAlliance(fOwner.Owner, U.Owner)= atEnemy))
                               and (Damage >= KaMRandom(101{$IFDEF DBG_RNG_SPY}, 'TKMProjectiles.UpdateState'{$ENDIF})) then
                                 U.HitPointsDecrease(1, fOwner);
@@ -327,7 +334,13 @@ begin
                               if (H <> nil)
                               and (FRIENDLY_FIRE or (gHands.CheckAlliance(fOwner.Owner, H.Owner)= atEnemy))
                               then
-                                H.AddDamage(1, fOwner);
+                              begin
+                                Damage := 1;
+                                If fType = ptCatapultRock then Damage := 20;
+                                If fType = ptBallistaBolt then Damage := 2;
+
+                                H.AddDamage(Damage, fOwner);
+                              end;
                             end;
               ptTowerRock: if (U <> nil) and not U.IsDeadOrDying and U.Visible
                             and not (U is TKMUnitAnimal)
@@ -381,7 +394,8 @@ begin
       P := KMLerp(fItems[I].fScreenStart, fItems[I].fScreenEnd, mixValue);
       pTileBased := KMLerp(fItems[I].fShotFrom, fItems[I].fTarget, mixValue);
       case fItems[I].fType of
-        ptArrow, ptSlingRock, ptBolt:
+        ptArrow, ptSlingRock, ptBolt,
+        ptCatapultRock, ptBallistaBolt:
           begin
             mixArc := sin(mixValue*pi);   // 0 >> 1 >> 0 Parabola
             //Looks better moved up, launches from the bow not feet and lands in target's body

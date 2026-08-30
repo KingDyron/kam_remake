@@ -635,7 +635,7 @@ type
     utKnight,       utBarbarian,
 
     utRebel,        utRogue,        utWarrior,       utVagabond,
-    //utCatapult,   utBallista,
+    utCatapult,   utBallista,
 
     utWolf,         utFish,         utWatersnake,    utSeastar,
     utCrab,         utWaterflower,  utWaterleaf,     utDuck);
@@ -648,13 +648,13 @@ const
   CITIZEN_MIN = utSerf;
   CITIZEN_MAX = utRecruit;
   WARRIOR_MIN = utMilitia;
-  WARRIOR_MAX = utVagabond;
+  WARRIOR_MAX = utBallista;
   WARRIOR_EQUIPABLE_BARRACKS_MIN = utMilitia; //Available from barracks
   WARRIOR_EQUIPABLE_BARRACKS_MAX = utKnight;
   WARRIOR_EQUIPABLE_TH_MIN = utBarbarian; //Available from Townhall
   WARRIOR_EQUIPABLE_TH_MAX = utVagabond;
   HUMANS_MIN = utSerf;
-  HUMANS_MAX = utVagabond;
+  HUMANS_MAX = utBallista;
   ANIMAL_MIN = utWolf;
   ANIMAL_MAX = utDuck;
 
@@ -663,6 +663,7 @@ const
   UNITS_CITIZEN = [CITIZEN_MIN..CITIZEN_MAX];
   UNITS_WARRIORS = [WARRIOR_MIN..WARRIOR_MAX];
   UNITS_HUMAN = [HUMANS_MIN..HUMANS_MAX];
+  WARRIOR_MACHINE = [utCatapult, utBallista];
 
   WARRIORS_IRON = [utSwordFighter, utCrossbowman, utPikeman, utKnight];
 
@@ -704,8 +705,8 @@ const
     gtAntiHorse,        // utRebel
     gtRanged,           // utRogue
     gtMelee,            // utWarrior
-    gtMounted           // utVagabond
-    {gtRanged,gtRanged, //utCatapult, utBallista,}
+    gtMounted,           // utVagabond
+    gtRanged,gtRanged //utCatapult, utBallista,}
     );
 
   //AI's prefences for training troops

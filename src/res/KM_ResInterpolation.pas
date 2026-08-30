@@ -47,6 +47,7 @@ uses
 procedure TKMResInterpolation.LoadFromFile(const FileName: string);
 var
   S: TKMemoryStreamBinary;
+  UT : TKMUnitType;
 begin
   if not FileExists(FileName) then Exit;
 
@@ -55,7 +56,9 @@ begin
     S.LoadFromFile(FileName);
 
     S.CheckMarker('UnitAction');
-    S.Read(fUnitActions, SizeOf(fUnitActions));
+    for UT := UNIT_MIN to UNIT_MAX do
+      If not (UT in [utCatapult, utBallista]) then //we need to skip catapult and ballista, because they don't have interpolatied anims yet
+        S.Read(fUnitActions[UT], SizeOf(fUnitActions[UT]));
 
     S.CheckMarker('SerfCarry ');
     S.Read(fSerfCarry, SizeOf(fSerfCarry));

@@ -177,13 +177,15 @@ const
     // Folder names are loosely based on unit names
     'militia', 'axeman', 'swordman', 'bowman', 'crossbowman',
     'lanceman', 'pikeman', 'cavalry', 'knights', 'barbarian',
-    'rebel', 'rogue', 'warrior', 'vagabond');
+    'rebel', 'rogue', 'warrior', 'vagabond',
+    '', ''); //siege machines
 
   // TPR warriors reuse TSK voices in some languages, so if the specific ones don't exist use these
   WARRIOR_SFX_FOLDER_BACKUP: array[WARRIOR_MIN..WARRIOR_MAX] of string = (
     '', '', '', '', '',
     '', '', '', '', '',
-    'bowman', 'lanceman', 'barbarian', 'cavalry');
+    'bowman', 'lanceman', 'barbarian', 'cavalry',
+    '', ''); //siege machines
 
   WARRIOR_SFX: array[TKMWarriorSpeech] of string = (
     'select', 'eat', 'left', 'right', 'halve',

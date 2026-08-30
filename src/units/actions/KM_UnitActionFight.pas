@@ -178,6 +178,8 @@ begin
     utCrossbowman: gSoundPlayer.Play(sfxCrossbowDraw, fUnit.PositionF); // Aiming
     utBowman:      gSoundPlayer.Play(sfxBowDraw,      fUnit.PositionF); // Aiming
     utRogue:       gSoundPlayer.Play(sfxSlingerShoot, fUnit.PositionF);
+    utCatapult:    gSoundPlayer.Play(sfxCatapultReload, fUnit.PositionF);
+    utBallista:    gSoundPlayer.Play(sfxUnknown76, fUnit.PositionF);
   else
     if IsHit then
       gSoundPlayer.Play(MELEE_SOUND_HIT[Random(Length(MELEE_SOUND_HIT))], fUnit.PositionF)

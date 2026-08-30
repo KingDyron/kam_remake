@@ -1267,6 +1267,8 @@ begin
     fCondition    := GetDefaultCondition;
     fStartWDefaultCondition := True;
   end;
+  If UnitType in WARRIOR_MACHINE then
+    fCondition := UNIT_MAX_CONDITION;
 
   fHitPoints      := HitPointsMax;
   fHitPointCounter := 1;
@@ -1942,7 +1944,10 @@ end;
 
 procedure TKMUnit.SetCondition(aValue: Integer);
 begin
-  fCondition := EnsureRange(aValue, 0, UNIT_MAX_CONDITION);
+  If UnitType in WARRIOR_MACHINE then
+    fCondition := UNIT_MAX_CONDITION
+  else
+    fCondition := EnsureRange(aValue, 0, UNIT_MAX_CONDITION);
 end;
 
 
@@ -2608,6 +2613,7 @@ begin
   // Update hunger
   if (fTicker mod UNIT_CONDITION_PACE = 0)
     and (fCondition > 0)
+    and not (UnitType in WARRIOR_MACHINE)
     and not ((fTask is TKMTaskGoEat) and TKMTaskGoEat(fTask).Eating) then
     //Make unit hungry as long as they are not currently eating in the inn
     Dec(fCondition);

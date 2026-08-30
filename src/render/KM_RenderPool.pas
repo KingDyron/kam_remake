@@ -1012,10 +1012,12 @@ begin
   end;
 
   case aProj of
-    ptArrow:     id := gRes.Interpolation.UnitActionByPercent(utBowman, uaSpec, aDir, aFlight);
-    ptBolt:      id := gRes.Interpolation.UnitActionByPercent(utCrossbowman, uaSpec, aDir, aFlight);
-    ptSlingRock: id := gRes.Interpolation.UnitActionByPercent(utRogue, uaSpec, aDir, aFlight);
-    ptTowerRock: id := gRes.Interpolation.UnitActionByPercent(utRecruit, uaSpec, aDir, aFlight);
+    ptArrow:        id := gRes.Interpolation.UnitActionByPercent(utBowman, uaSpec, aDir, aFlight);
+    ptBolt:         id := gRes.Interpolation.UnitActionByPercent(utCrossbowman, uaSpec, aDir, aFlight);
+    ptSlingRock:    id := gRes.Interpolation.UnitActionByPercent(utRogue, uaSpec, aDir, aFlight);
+    ptTowerRock:    id := gRes.Interpolation.UnitActionByPercent(utRecruit, uaSpec, aDir, aFlight);
+    ptBallistaBolt: id := gRes.Interpolation.UnitActionByPercent(utBallista, uaSpec, aDir, aFlight);
+    ptCatapultRock: id := gRes.Interpolation.UnitActionByPercent(utCatapult, uaSpec, aDir, aFlight);
   else
     id := 1; // Nothing?
   end;
@@ -1026,6 +1028,7 @@ begin
   cornerY := (rxData.Pivot[id].Y + rxData.Size[id].Y) / CELL_SIZE_PX - 1;
 
   case aProj of
+    ptCatapultRock, ptBallistaBolt,
     ptArrow, ptBolt, ptSlingRock:  ground := aTilePos.Y + (0.5 - Abs(Min(aFlight, 1) - 0.5)) - 0.5;
     ptTowerRock:                   ground := aTilePos.Y + Min(aFlight, 1)/5 - 0.4;
   else

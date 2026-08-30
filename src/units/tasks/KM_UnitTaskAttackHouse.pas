@@ -134,6 +134,8 @@ begin
               case UnitType of
                 utCrossbowman: gSoundPlayer.Play(sfxCrossbowDraw, PositionF); //Aiming
                 utBowman:     gSoundPlayer.Play(sfxBowDraw,      PositionF); //Aiming
+                utCatapult: gSoundPlayer.Play(sfxCatapultReload, PositionF); //Aiming
+                utBallista: gSoundPlayer.Play(sfxCatapultReload, PositionF); //Aiming
                 utRogue:  ;
                 else           raise Exception.Create('Unknown shooter');
               end;

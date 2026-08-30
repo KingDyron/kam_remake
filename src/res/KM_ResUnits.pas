@@ -139,7 +139,7 @@ const
     -1, -1, //utNone, utAny
     0,1,2,3,4,5,6,7,8,9,10,11,12,13, //Citizens
     14,15,16,17,18,19,20,21,22,23, //Warriors
-    -1,-1,-1,-1, {-1,-1,} //TPR warriors (can't be placed with SET_UNIT)
+    -1,-1,-1,-1, -1,-1, //TPR warriors (can't be placed with SET_UNIT)
     24,25,26,27,28,29,30,31); //Animals
 
   //This is a map of the valid values for !SET_GROUP, and the corresponing unit that will be created (matches KaM behavior)
@@ -150,7 +150,7 @@ const
     utMilitia,utAxeFighter,utSwordFighter,utBowman,utCrossbowman,
     utLanceCarrier,utPikeman,utScout,utKnight,utBarbarian, //TSK Troops
     utRebel,utRogue,utWarrior,utVagabond,
-    {utCatapult,utBallista}utNone,utNone, //Placeholder for Seige weapons
+    utCatapult,utBallista,
     utWolf, utFish, utWatersnake, utSeastar, utCrab,
     utWaterflower, utWaterleaf, utDuck,
     utNone, utNone, utNone
@@ -160,7 +160,7 @@ const
     -1, -1,                           // utNone, utAny
     0,1,2,3,4,5,6,7,8,9,10,11,12,13,  // Citizens
     14,15,16,17,18,19,20,21,22,23,    // Warriors
-    24,25,26,27, {28,29,}             // TPR warriors
+    24,25,26,27, 28,29,             // TPR warriors
     30,31,32,33,34,35,36,37           // Animals
   );
 
@@ -312,6 +312,8 @@ const
     [uaWalk, uaWork, uaSpec, uaDie, uaEat], // utRogue
     [uaWalk, uaWork, uaSpec, uaDie, uaEat], // utWarrior
     [uaWalk, uaWork, uaDie, uaEat],         // utVagabond
+    [uaWalk, uaWork, uaDie, uaEat],         // utCatapult
+    [uaWalk, uaWork, uaDie, uaEat],         // utBallista
     [uaWalk], [uaWalk], [uaWalk], [uaWalk], [uaWalk], [uaWalk], [uaWalk], [uaWalk] // Animals
   );
 begin
@@ -341,7 +343,8 @@ const
     2, 4,           // utLanceCarrier, utPikeman
     3.3, 6.3,       // utScout, utKnight
     5.3, 0.8, 1.2,  // utBarbarian, utRebel, utRogue
-    5.3, 1.9        // utWarrior, utVagabond
+    5.3, 1.9,       // utWarrior, utVagabond
+    7, 7            // temporary for utCatapult and utBallista
   );
 begin
   Assert(fUnitType in [Low(WARRIORS_POWER_RATES)..High(WARRIORS_POWER_RATES)]);
@@ -370,7 +373,8 @@ const
     ftMelee,                   // utRebel
     ftRanged,                  // utRogue
     ftMelee,                   // utWarrior
-    ftMelee                    // utVagabond
+    ftMelee,                   // utVagabond
+    ftRanged, ftRanged         // utCatapult, utBallista
   );
 begin
   Assert(fUnitType in [Low(WARRIOR_FIGHT_TYPE)..High(WARRIOR_FIGHT_TYPE)]);
@@ -413,6 +417,7 @@ const
     0,0,0,0,0,0,0,0,0,0,
     0,0,0,0,0,0,0,0,0,0,
     0,0,0,0,0,0,0,0,0,0,
+    0,0,
     $B0B0B0,$B08000,$B08000,$80B0B0,$00B0B0,$B080B0,$00B000,$80B0B0); // Exact colors can be tweaked
 begin
   Result := MINIMAP_COLOR[fUnitType] or $FF000000;

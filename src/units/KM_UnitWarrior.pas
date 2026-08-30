@@ -415,7 +415,9 @@ begin
   case fType of
     utBowman,
     utCrossbowman,
-    utRogue:   Result := RangeMax / (Ord(DBG_REDUCE_SHOOTING_RANGE) + 1);
+    utRogue,
+    utCatapult,
+    utBallista:   Result := RangeMax / (Ord(DBG_REDUCE_SHOOTING_RANGE) + 1);
     //During storm attack we look for enemies 1.42 tiles away so we engage enemies easier and don't accidentially walk past them diagonally
   else
     if aTileBased and not (Action is TKMUnitActionStormAttack) then
@@ -432,7 +434,9 @@ begin
   case fType of
     utBowman,
     utCrossbowman,
-    utRogue:   Result := RangeMin;
+    utRogue,
+    utCatapult,
+    utBallista:   Result := RangeMin;
   else
     Result := 0.5;
   end;
@@ -772,6 +776,8 @@ function TKMUnitWarrior.GetFiringDelay: Byte;
 const
   FIRING_DELAY = 0; //on which frame archer fires his arrow/bolt
   ROGUE_FIRING_DELAY = 15; //on which frame rogue throws his rock
+  CATAPULT_FIRING_DELAY = 20;
+  BALLISTA_FIRING_DELAY = 10;
 begin
   Result := 0;
   if IsRanged then
@@ -779,6 +785,8 @@ begin
       utBowman,
       utCrossbowman:  Result := FIRING_DELAY;
       utRogue:        Result := ROGUE_FIRING_DELAY;
+      utCatapult:     Result := CATAPULT_FIRING_DELAY;
+      utBallista:     Result := BALLISTA_FIRING_DELAY;
     else
       raise Exception.Create('Unknown shooter');
     end;
@@ -793,6 +801,12 @@ const
   ROGUE_AIMING_DELAY_ADD       = 4; //random component
   CROSSBOWMAN_AIMING_DELAY_MIN = 8; //minimum time for crossbowman to aim
   CROSSBOWMAN_AIMING_DELAY_ADD = 8; //random component
+
+  CATAPULT_AIMING_DELAY_MIN = 12; //minimum time for catapult to aim
+  CATAPULT_AIMING_DELAY_ADD = 16; //random component
+  BALLISTA_AIMING_DELAY_MIN = 12; //minimum time for balista to aim
+  BALLISTA_AIMING_DELAY_ADD = 8; //random component
+
 begin
   Result := 0;
   if IsRanged then
@@ -800,6 +814,8 @@ begin
       utBowman:       Result := BOWMAN_AIMING_DELAY_MIN + KaMRandom(BOWMAN_AIMING_DELAY_ADD{$IFDEF DBG_RNG_SPY}, 'TKMUnitWarrior.GetAimingDelay'{$ENDIF});
       utCrossbowman:  Result := CROSSBOWMAN_AIMING_DELAY_MIN + KaMRandom(CROSSBOWMAN_AIMING_DELAY_ADD{$IFDEF DBG_RNG_SPY}, 'TKMUnitWarrior.GetAimingDelay 2'{$ENDIF});
       utRogue:        Result := ROGUE_AIMING_DELAY_MIN + KaMRandom(ROGUE_AIMING_DELAY_ADD{$IFDEF DBG_RNG_SPY}, 'TKMUnitWarrior.GetAimingDelay 3'{$ENDIF});
+      utCatapult:        Result := CATAPULT_AIMING_DELAY_MIN + KaMRandom(CATAPULT_AIMING_DELAY_ADD{$IFDEF DBG_RNG_SPY}, 'TKMUnitWarrior.GetAimingDelay 4'{$ENDIF});
+      utBallista:        Result := BALLISTA_AIMING_DELAY_MIN + KaMRandom(BALLISTA_AIMING_DELAY_ADD{$IFDEF DBG_RNG_SPY}, 'TKMUnitWarrior.GetAimingDelay 5'{$ENDIF});
     else
       raise Exception.Create('Unknown shooter');
     end;
@@ -809,10 +825,14 @@ end;
 function TKMUnitWarrior.GetAimSoundDelay: Byte;
 const
   ROGUE_AIMING_SOUND_DELAY = 2;
+  BALLISTA_AIMING_SOUND_DELAY = 21;
 begin
   Result := 0;
   if UnitType = utRogue then
-    Result := ROGUE_AIMING_SOUND_DELAY;
+    Result := ROGUE_AIMING_SOUND_DELAY
+  else
+  if UnitType = utBallista then
+    Result := BALLISTA_AIMING_SOUND_DELAY;
 end;
 
 
@@ -837,6 +857,8 @@ const
   RANGE_BOWMAN_MIN      = 4; // KaM: Archer will shoot a unit standing 4 tiles away, but not one standing 3 tiles away
   RANGE_CROSSBOWMAN_MIN = 4;
   RANGE_ROGUE_MIN       = 4;
+  RANGE_CATAPULT_MIN    = 6;
+  RANGE_BALLISTA_MIN    = 5;
 begin
   Result := 0;
   if IsRanged then
@@ -844,6 +866,8 @@ begin
       utBowman:       Result := RANGE_BOWMAN_MIN;
       utCrossbowman:  Result := RANGE_CROSSBOWMAN_MIN;
       utRogue:        Result := RANGE_ROGUE_MIN;
+      utCatapult:     Result := RANGE_CATAPULT_MIN;
+      utBallista:     Result := RANGE_BALLISTA_MIN;
     else
       raise Exception.Create('Unknown shooter');
     end;
@@ -855,6 +879,8 @@ const
   RANGE_CROSSBOWMAN_MAX = 10.99; // KaM: Unit standing 10 tiles from us will be shot, 11 tiles not
   RANGE_BOWMAN_MAX      = 10.99;
   RANGE_ROGUE_MAX       = 10.99;
+  RANGE_BALLISTA_MAX    = 10.99;
+  RANGE_CATAPULT_MAX    = 10.99;
 begin
   Result := 0;
   if IsRanged then
@@ -862,6 +888,8 @@ begin
       utBowman:       Result := RANGE_BOWMAN_MAX;
       utCrossbowman:  Result := RANGE_CROSSBOWMAN_MAX;
       utRogue:        Result := RANGE_ROGUE_MAX;
+      utCatapult:     Result := RANGE_CATAPULT_MAX;
+      utBallista:     Result := RANGE_BALLISTA_MAX;
     else
       raise Exception.Create('Unknown shooter');
     end;
@@ -875,6 +903,8 @@ begin
     utBowman:       Result := ptArrow;
     utCrossbowman:  Result := ptBolt;
     utRogue:        Result := ptSlingRock;
+    utCatapult:     Result := ptCatapultRock;
+    utBallista:     Result := ptBallistaBolt;
   else
     raise Exception.Create('Unknown shooter');
   end;
