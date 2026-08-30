@@ -104,14 +104,14 @@ const
   // All shortcuts are in English and are the same for all languages to avoid
   // naming collisions and confusion in discussions
 
-  GUI_HOUSE_COUNT = 28;   // Number of KaM houses to show in GUI
+  GUI_HOUSE_COUNT = 29;   // Number of KaM houses to show in GUI
   GUIHouseOrder: array [1..GUI_HOUSE_COUNT] of TKMHouseType = (
     htSchool, htInn, htQuarry, htWoodcutters, htSawmill,
     htFarm, htMill, htBakery, htSwine, htButchers,
     htVineyard, htGoldMine, htCoalMine, htMetallurgists, htWeaponWorkshop,
     htTannery, htArmorWorkshop, htStables, htIronMine, htIronSmithy,
     htWeaponSmithy, htArmorSmithy, htBarracks, htStore, htWatchTower,
-    htFishermans, htMarket, htTownHall);
+    htFishermans, htMarket, htTownHall, htSiegeWorkshop);
 
   // Template for how resources are shown in Barracks
   BARRACKS_RES_COUNT = 11;
@@ -141,10 +141,11 @@ const
   TownHall_Order: array [0..4] of TKMUnitType = (
     utRebel, utRogue, utVagabond, utBarbarian, utWarrior);
 
-  Soldiers_Order: array[0..13] of TKMUnitType = (
+  Soldiers_Order: array[0..15] of TKMUnitType = (
     utMilitia, utAxeFighter, utSwordFighter, utBowman, utCrossbowman,
     utLanceCarrier, utPikeman, utScout, utKnight,
-    utRebel, utRogue, utVagabond, utBarbarian, utWarrior);
+    utRebel, utRogue, utVagabond, utBarbarian, utWarrior,
+    utCatapult, utBallista);
 
   // Stats get stacked by UI logic (so that on taller screens they all were
   // in nice pairs, and would stack up only on short screens)
@@ -152,19 +153,19 @@ const
     HouseType: array [0..3] of TKMHouseType;
     UnitType: array [0..1] of TKMUnitType;
   end = (
-    (HouseType: (htQuarry, htNone, htNone, htNone);                     UnitType: (utStonemason, utNone)),
-    (HouseType: (htWoodcutters, htNone, htNone, htNone);                UnitType: (utWoodcutter, utNone)),
-    (HouseType: (htFishermans, htNone, htNone, htNone);                 UnitType: (utFisher, utNone)),
-    (HouseType: (htFarm, htVineyard, htNone, htNone);                   UnitType: (utFarmer, utNone)),
-    (HouseType: (htMill, htBakery, htNone, htNone);                     UnitType: (utBaker, utNone)),
-    (HouseType: (htSwine, htStables, htNone, htNone);                   UnitType: (utAnimalBreeder, utNone)),
-    (HouseType: (htButchers, htTannery, htNone, htNone);                UnitType: (utButcher, utNone)),
-    (HouseType: (htMetallurgists, htIronSmithy, htNone, htNone);        UnitType: (utMetallurgist, utNone)),
-    (HouseType: (htArmorSmithy, htWeaponSmithy, htNone, htNone);        UnitType: (utSmith, utNone)),
-    (HouseType: (htCoalMine, htIronMine, htGoldMine, htNone);           UnitType: (utMiner, utNone)),
-    (HouseType: (htSawmill, htWeaponWorkshop, htArmorWorkshop, htNone); UnitType: (utCarpenter, utNone)),
-    (HouseType: (htBarracks, htTownHall, htWatchTower, htNone);         UnitType: (utRecruit, utNone)),
-    (HouseType: (htStore, htSchool, htInn, htMarket);                   UnitType: (utSerf, utBuilder))
+    (HouseType: (htQuarry, htNone, htNone, htNone);                               UnitType: (utStonemason, utNone)),
+    (HouseType: (htWoodcutters, htNone, htNone, htNone);                          UnitType: (utWoodcutter, utNone)),
+    (HouseType: (htFishermans, htNone, htNone, htNone);                           UnitType: (utFisher, utNone)),
+    (HouseType: (htFarm, htVineyard, htNone, htNone);                             UnitType: (utFarmer, utNone)),
+    (HouseType: (htMill, htBakery, htNone, htNone);                               UnitType: (utBaker, utNone)),
+    (HouseType: (htSwine, htStables, htNone, htNone);                             UnitType: (utAnimalBreeder, utNone)),
+    (HouseType: (htButchers, htTannery, htNone, htNone);                          UnitType: (utButcher, utNone)),
+    (HouseType: (htMetallurgists, htIronSmithy, htNone, htNone);                  UnitType: (utMetallurgist, utNone)),
+    (HouseType: (htArmorSmithy, htWeaponSmithy, htNone, htNone);                  UnitType: (utSmith, utNone)),
+    (HouseType: (htCoalMine, htIronMine, htGoldMine, htNone);                     UnitType: (utMiner, utNone)),
+    (HouseType: (htSawmill, htWeaponWorkshop, htArmorWorkshop, htSiegeWorkshop);  UnitType: (utCarpenter, utNone)),
+    (HouseType: (htBarracks, htTownHall, htWatchTower, htNone);                   UnitType: (utRecruit, utNone)),
+    (HouseType: (htStore, htSchool, htInn, htMarket);                             UnitType: (utSerf, utBuilder))
     );
 
   MapEd_Order: array [0..15] of TKMUnitType = (
