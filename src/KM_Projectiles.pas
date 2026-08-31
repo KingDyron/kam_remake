@@ -69,8 +69,8 @@ const
   PROJECTILE_HIT_SOUND:   array[TKMProjectileType] of TKMSoundEffectOriginal = (sfxArrowHit, sfxArrowHit, sfxArrowHit, sfxNone, sfxSiegeBuildingSmash, sfxSiegeBuildingSmash);
   PROJECTILE_SPEED: array[TKMProjectileType] of Single = (0.75, 0.75, 0.6, 0.8, 0.75, 1);
   PROJECTILE_ARC: array[TKMProjectileType,1..2] of Single = ((1.6, 0.5), (1.4, 0.4), (2.5, 1), (1.2, 0.2), (2.5, 1), (1.2, 0.3)); //Arc curve and random fraction
-  PROJECTILE_JITTER: array[TKMProjectileType] of Single = (0.26, 0.29, 0.26, 0.2, 0.35, 0.19); //Fixed Jitter added every time
-  PROJECTILE_JITTER_HOUSE: array[TKMProjectileType] of Single = (0.6, 0.6, 0.6, 0, 0.8, 0.4); //Fixed Jitter added every time
+  PROJECTILE_JITTER: array[TKMProjectileType] of Single = (0.26, 0.29, 0.26, 0.2, 1, 0.19); //Fixed Jitter added every time
+  PROJECTILE_JITTER_HOUSE: array[TKMProjectileType] of Single = (0.6, 0.6, 0.6, 0, 2, 0.4); //Fixed Jitter added every time
   // Jitter added according to target's speed (moving target harder to hit) Note: Walking = 0.1, so the added jitter is 0.1*X
   PROJECTILE_PREDICT_JITTER: array[TKMProjectileType] of Single = (2, 2, 2, 3, 2, 2);
 
