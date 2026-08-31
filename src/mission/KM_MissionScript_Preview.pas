@@ -241,8 +241,9 @@ const
 var
   I: Integer;
   fileText: AnsiString;
+  tmpGameRev : Integer;
 begin
-  inherited LoadMission(aFileName);
+  inherited LoadMission(aFileName, tmpGameRev);
 
   SetLength(fRevealFor, Length(aRevealFor));
   for I := Low(aRevealFor) to High(aRevealFor) do

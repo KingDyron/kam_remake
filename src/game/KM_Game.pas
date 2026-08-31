@@ -552,6 +552,7 @@ var
   mapInfo: TKMMapInfo;
   campDataStream: TKMemoryStream;
   campaignDataFilePath: UnicodeString;
+  gameRev : Integer;
 begin
   gLog.AddTime('GameStart');
   Assert(fParams.Mode in [gmMulti, gmMultiSpectate, gmMapEd, gmSingle, gmCampaign]);
@@ -653,7 +654,7 @@ begin
   parser := TKMMissionParserStandard.Create(parseMode, playerEnabled);
   try
     // Any fatal errors in parsing will be raised as exceptions and caught up higher
-    parser.LoadMission(aMissionFullFilePath);
+    parser.LoadMission(aMissionFullFilePath, gameRev);
 
     if fParams.IsMapEditor then
     begin
@@ -751,7 +752,7 @@ begin
       MultiplayerRig(True);
 
     // some late operations for parser (f.e. ProcessAttackPositions, which should be done after MultiplayerRig)
-    parser.PostLoadMission;
+    parser.PostLoadMission(gameRev);
   finally
     parser.Free;
   end;

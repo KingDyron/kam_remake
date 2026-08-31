@@ -34,8 +34,8 @@ type
     constructor Create(aMode: TKMMissionParsingMode; var aPlayersEnabled: TKMHandEnabledArray); overload;
     destructor Destroy; override;
 
-    procedure LoadMission(const aFileName: string); override;
-    procedure PostLoadMission;
+    procedure LoadMission(const aFileName: string; var aGameRev : Integer); override;
+    procedure PostLoadMission(aGameRev : Integer);
 
     property DefaultLocation: ShortInt read fDefaultLocation;
     procedure SaveDATFile(const aFileName: string; aLeftInset: SmallInt = 0; aTopInset: SmallInt = 0; aDoXorEncoding: Boolean = False);
@@ -117,11 +117,11 @@ begin
 end;
 
 
-procedure TKMMissionParserStandard.LoadMission(const aFileName: string);
+procedure TKMMissionParserStandard.LoadMission(const aFileName: string; var aGameRev : Integer);
 var
   fileText: AnsiString;
 begin
-  inherited LoadMission(aFileName);
+  inherited LoadMission(aFileName, aGameRev);
 
   Assert((gTerrain <> nil) and (gHands <> nil));
 
@@ -129,7 +129,7 @@ begin
   if not FileExists(ChangeFileExt(fMissionFileName, '.map')) then
     raise Exception.Create('Map file couldn''t be found');
 
-  gTerrain.LoadFromFile(ChangeFileExt(fMissionFileName, '.map'), fParsingMode = mpmEditor);
+  gTerrain.LoadFromFile(ChangeFileExt(fMissionFileName, '.map'), fParsingMode = mpmEditor, aGameRev);
   gGame.TerrainPainter.LoadFromFile(ChangeFileExt(fMissionFileName, '.map'));
 
   //Read the mission file into FileText
@@ -141,11 +141,11 @@ begin
 end;
 
 
-procedure TKMMissionParserStandard.PostLoadMission;
+procedure TKMMissionParserStandard.PostLoadMission(aGameRev : Integer);
 begin
   //Post-processing of ctAttack_Position commands which must be done after mission has been loaded
   HandleGroupOrders;
-  gHands.PostLoadMission;
+  gHands.PostLoadMission(aGameRev);
 end;
 
 

@@ -174,7 +174,7 @@ type
 
     procedure AddAIType(aHandAIType: TKMAIType);
 
-    procedure PostLoadMission;
+    procedure PostLoadMission(aGameRev : Integer);
 
     function IsAnimal: Boolean;
     function IsHuman: Boolean;
@@ -1494,7 +1494,7 @@ begin
 end;
 
 
-procedure TKMHand.PostLoadMission;
+procedure TKMHand.PostLoadMission(aGameRev : Integer);
 var
   I: Integer;
 begin
@@ -1502,6 +1502,13 @@ begin
   
   for I := 0 to fHouses.Count - 1 do
     fHouses[I].PostLoadMission;
+
+  If aGameRev <= 16290 then
+  begin
+    fLocks.SetUnitBlocked(true, utCatapult);
+    fLocks.SetUnitBlocked(true, utBallista);
+    fLocks.HouseLock[htSiegeWorkshop] := hlBlocked;
+  end;
 end;
 
 

@@ -70,7 +70,7 @@ type
     destructor Destroy; override;
 
     procedure MakeNewMap(aWidth, aHeight: Integer; aMapEditor: Boolean);
-    procedure LoadFromFile(const aFileName: UnicodeString; aMapEditor: Boolean);
+    procedure LoadFromFile(const aFileName: UnicodeString; aMapEditor: Boolean; out aGameRev : Integer);
     procedure SaveToFile(const aFile: UnicodeString); overload;
     procedure SaveToFile(const aFile: UnicodeString; const aInsetRect: TKMRect); overload;
 
@@ -476,7 +476,7 @@ begin
 end;
 
 
-procedure TKMTerrain.LoadFromFile(const aFileName: UnicodeString; aMapEditor: Boolean);
+procedure TKMTerrain.LoadFromFile(const aFileName: UnicodeString; aMapEditor: Boolean; out aGameRev : Integer);
 var
   I, J, L: Integer;
   S: TKMemoryStream;
@@ -498,7 +498,7 @@ begin
     S.LoadFromFile(aFileName);
 
     LoadMapHeader(S, newX, newY, gameRev);
-
+    aGameRev := gameRev;
     fMapX := newX;
     fMapY := newY;
 

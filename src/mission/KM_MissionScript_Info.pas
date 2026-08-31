@@ -44,10 +44,11 @@ const
     '!SET_MAX_PLAYER', '!SET_CURR_PLAYER', '!SET_USER_PLAYER', '!SET_HUMAN_PLAYER', '!SET_AI_PLAYER', '!SET_ADVANCED_AI_PLAYER');
 var
   fileText: AnsiString;
+  tmpGameRev : Integer;
 begin
   fMapInfo := aMapInfo;
 
-  inherited LoadMission(aFileName);
+  inherited LoadMission(aFileName, tmpGameRev);
 
   fileText := ReadMissionFile(aFileName);
   if fileText = '' then

@@ -101,7 +101,7 @@ type
     procedure AddDefaultGoalsToAll(aMissionMode: TKMissionMode);
     procedure UpdateGoalsForHand(aHandIndex: TKMHandID; aEnable: Boolean);
     function DoCheckGoals: Boolean;
-    procedure PostLoadMission;
+    procedure PostLoadMission(aGameRev : Integer);
 
     function CanHaveAI: Boolean;
     function CanHaveAdvancedAI: Boolean;
@@ -677,12 +677,12 @@ begin
 end;
 
 
-procedure TKMHandsCollection.PostLoadMission;
+procedure TKMHandsCollection.PostLoadMission(aGameRev : Integer);
 var
   I: Integer;
 begin
   for I := 0 to fCount - 1 do
-    fHandsList[I].PostLoadMission;
+    fHandsList[I].PostLoadMission(aGameRev : Integer);
 
   fCheckGoals := False;
 end;

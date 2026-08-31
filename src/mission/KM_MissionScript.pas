@@ -163,7 +163,7 @@ type
     procedure AddError(const aErrorMsg: string);
   public
     property MinorErrors: string read fMinorErrors;
-    procedure LoadMission(const aFileName: string); virtual;
+    procedure LoadMission(const aFileName: string; var aGameRev : Integer); virtual;
   end;
 
 
@@ -173,10 +173,11 @@ uses
 
 
 { TKMMissionParserCommon }
-procedure TKMMissionParserCommon.LoadMission(const aFileName: string);
+procedure TKMMissionParserCommon.LoadMission(const aFileName: string; var aGameRev : Integer);
 begin
   fMissionFileName := aFileName;
   fLastHand := -1;
+  aGameRev := -1;
 end;
 
 
