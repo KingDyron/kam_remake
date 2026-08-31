@@ -1068,6 +1068,7 @@ procedure TKMGUIGameHouse.ShowSiegeWorkshop(aHouse: TKMHouse);
 var
   I, rowRes, base, line: Integer;
   siegeWorkshop : TKMHouseSiegeWorkshop;
+  unitGranted : Boolean;
 begin
   //Now show only what we need
 
@@ -1082,6 +1083,17 @@ begin
   Panel_HouseSiegeWorkshop.Top := 76 + base + line * LINE_HEIGHT;
   for I := Low(Image_MachineScroll) to High(Image_MachineScroll) do
   begin
+    unitGranted := not gHands[aHouse.Owner].Locks.GetUnitBlocked(MACHINES_ORDER[I + 1]);
+
+    Image_MachineScroll[I].Enabled        := unitGranted;
+    Label_MachineOrderCnt[I].Enabled      := unitGranted;
+    Button_StoredMachinesCnt[I].Enabled   := unitGranted;
+    Image_MachineScroll[I].Enabled        := unitGranted;
+    NumEdit_MachineOrderRem[I].Enabled    := unitGranted;
+    NumEdit_MachineOrderAdd[I].Enabled    := unitGranted;
+    Button_StoredMachinesEquip[I].Enabled := unitGranted and (siegeWorkshop.StoredMachines[I + 1] > 0);
+
+
     Image_MachineScroll[I].FlagColor := gHands[aHouse.Owner].GameFlagColor;
     Label_MachineOrderCnt[I].Caption := aHouse.WareOrder[I + 1].ToString;
     Button_StoredMachinesCnt[I].Caption := IntToStr(siegeWorkshop.StoredMachines[I + 1]);
@@ -1618,7 +1630,7 @@ begin
     else
     If Sender = NumEdit_MachineOrderRem[I] then
       gGame.GameInputProcess.CmdHouse(gicHouseOrderProduct, SW, I + 1, -GetMultiplicator(Shift));
-
+  ShowSiegeWorkshop(SW);
 end;
 
 
