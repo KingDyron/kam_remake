@@ -12,17 +12,21 @@ type
     procedure Player_BlockUnitClick(Sender: TObject; Shift: TShiftState);
     procedure Player_BlockBarracksWarriorsClick(Sender: TObject; Shift: TShiftState);
     procedure Player_BlockTHWarriorsClick(Sender: TObject; Shift: TShiftState);
+    procedure Player_BlockSWMachinesClick(Sender: TObject; Shift: TShiftState);
     procedure Player_BlockUnitRefresh;
     procedure Player_BlockBarracksWarriorsRefresh;
     procedure Player_BlockTHWarriorsRefresh;
+    procedure Player_BlockSWMachinesRefresh;
   protected
     Panel_BlockUnit: TKMPanel;
     Button_BlockUnit: array [0..13] of TKMButtonFlat;
     Button_BlockBarracksWarriors: array [0..High(Barracks_Order)] of TKMButtonFlat;
     Button_BlockTHWarriors: array [0..High(TownHall_Order)] of TKMButtonFlat;
+    Button_BlockSWMachines: array [0..1] of TKMButtonFlat;
     Image_BlockUnit: array [0..13] of TKMImage;
     Image_BlockBarracksWarriors: array[0..High(Barracks_Order)] of TKMImage;
     Image_BlockTHWarriors: array[0..High(TownHall_Order)] of TKMImage;
+    Image_BlockSWMachines: array[0..1] of TKMImage;
   public
     constructor Create(aParent: TKMPanel);
     procedure Show;
@@ -85,6 +89,18 @@ begin
     Image_BlockTHWarriors[I].Hitable := False;
     Image_BlockTHWarriors[I].ImageCenter;
   end;
+
+  TKMLabel.Create(Panel_BlockUnit, 9, 307, Panel_BlockUnit.Width - 9, 0, 'In Siege Workshop', fntMetal, taLeft);
+  for I := 0 to High(Button_BlockSWMachines) do
+  begin
+    Button_BlockSWMachines[I] := TKMButtonFlat.Create(Panel_BlockUnit, 9 + (I mod 5)*37,327+(I div 5)*37,33,33, gRes.Units[MACHINES_ORDER[I + 1]].GUIIcon, rxGui);
+    Button_BlockSWMachines[I].Hint := gRes.Units[MACHINES_ORDER[I + 1]].GUIName;
+    Button_BlockSWMachines[I].Tag := I + 1;
+    Button_BlockSWMachines[I].OnClickShift := Player_BlockSWMachinesClick;
+    Image_BlockSWMachines[I] := TKMImage.Create(Panel_BlockUnit, 9 + (I mod 5)*37 + 15,327+(I div 5)*37 + 15, 16, 16, 0, rxGuiMain);
+    Image_BlockSWMachines[I].Hitable := False;
+    Image_BlockSWMachines[I].ImageCenter;
+  end;
 end;
 
 
@@ -129,6 +145,19 @@ begin
   Player_BlockTHWarriorsRefresh;
 end;
 
+
+procedure TKMMapEdPlayerBlockUnit.Player_BlockSWMachinesClick(Sender: TObject; Shift: TShiftState);
+var
+  K: Integer;
+  W: TKMUnitType;
+begin
+  K := TKMButtonFlat(Sender).Tag;
+  W := MACHINES_ORDER[K];
+
+  gMySpectator.Hand.Locks.SetUnitBlocked(not gMySpectator.Hand.Locks.GetUnitBlocked(W, false), W, false);
+
+  Player_BlockSWMachinesRefresh;
+end;
 
 procedure TKMMapEdPlayerBlockUnit.Player_BlockUnitRefresh;
 var
@@ -190,6 +219,26 @@ begin
 end;
 
 
+procedure TKMMapEdPlayerBlockUnit.Player_BlockSWMachinesRefresh;
+var
+  K: Integer;
+  W: TKMUnitType;
+  blocked: Boolean;
+begin
+  for K := 0 to High(Button_BlockSWMachines) do
+  begin
+    W := MACHINES_ORDER[Button_BlockSWMachines[K].Tag];
+    blocked := gMySpectator.Hand.Locks.GetUnitBlocked(W, True);
+    if blocked then
+      Image_BlockSWMachines[K].TexID := 32
+    else if not blocked then
+      Image_BlockSWMachines[K].TexID := 0
+    else
+      Image_BlockSWMachines[K].TexID := 24;
+  end;
+end;
+
+
 procedure TKMMapEdPlayerBlockUnit.UpdatePlayerColor;
 var
   I: Integer;
@@ -203,6 +252,8 @@ begin
     Button_BlockBarracksWarriors[I].FlagColor := col;
   for I := Low(Button_BlockTHWarriors) to High(Button_BlockTHWarriors) do
     Button_BlockTHWarriors[I].FlagColor := col;
+  for I := Low(Button_BlockSWMachines) to High(Button_BlockSWMachines) do
+    Button_BlockSWMachines[I].FlagColor := col;
 end;
 
 
@@ -211,6 +262,7 @@ begin
   Player_BlockUnitRefresh;
   Player_BlockBarracksWarriorsRefresh;
   Player_BlockTHWarriorsRefresh;
+  Player_BlockSWMachinesRefresh;
   Panel_BlockUnit.Show;
 end;
 
