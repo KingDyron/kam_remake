@@ -322,7 +322,7 @@ begin
                               if fType = ptBallistaBolt then  Damage := gRes.Units[utBallista].Attack;
 
                               IF fType = ptBallistaBolt then //don't ignore defence fully for ballista. Let's divide it instead
-                                Damage := Round(Damage / Math.max(gRes.Units[U.UnitType].GetDefenceVsProjectiles(true) * 0.70, 1)); //Max is not needed, but animals have 0 defence
+                                Damage := Round(Damage / Math.max(gRes.Units[U.UnitType].GetDefenceVsProjectiles(true) * 0.65, 1)) //Max is not needed, but animals have 0 defence
                               else
                                 Damage := Round(Damage / Math.max(gRes.Units[U.UnitType].GetDefenceVsProjectiles(fType = ptBolt), 1)); //Max is not needed, but animals have 0 defence
 
