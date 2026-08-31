@@ -682,7 +682,7 @@ var
   I: Integer;
 begin
   for I := 0 to fCount - 1 do
-    fHandsList[I].PostLoadMission(aGameRev : Integer);
+    fHandsList[I].PostLoadMission(aGameRev);
 
   fCheckGoals := False;
 end;
