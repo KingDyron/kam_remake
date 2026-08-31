@@ -127,7 +127,9 @@ var
   I, resI: Integer;
 begin
   Result := 0;
-
+  //we need those resources to create a machine
+  If not ( (CheckWareIn(wtTimber) >= 5) and (CheckWareIn(wtIron) >= 5) ) then
+    Exit;
   if WARFARE_ORDER_SEQUENTIAL then
     for I := 0 to 3 do
     begin
