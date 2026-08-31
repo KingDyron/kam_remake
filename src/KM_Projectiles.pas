@@ -321,7 +321,9 @@ begin
                               if fType = ptCatapultRock then  Damage := gRes.Units[utCatapult].Attack;
                               if fType = ptBallistaBolt then  Damage := gRes.Units[utBallista].Attack;
 
-                              IF fType <> ptBallistaBolt then //ignore defence for ballista, so there is like 90% to hit a unit
+                              IF fType = ptBallistaBolt then //don't ignore defence fully for ballista. Let's divide it instead
+                                Damage := Round(Damage / Math.max(gRes.Units[U.UnitType].GetDefenceVsProjectiles(true) * 0.70, 1)); //Max is not needed, but animals have 0 defence
+                              else
                                 Damage := Round(Damage / Math.max(gRes.Units[U.UnitType].GetDefenceVsProjectiles(fType = ptBolt), 1)); //Max is not needed, but animals have 0 defence
 
                               if (FRIENDLY_FIRE or (gHands.CheckAlliance(fOwner.Owner, U.Owner)= atEnemy))
