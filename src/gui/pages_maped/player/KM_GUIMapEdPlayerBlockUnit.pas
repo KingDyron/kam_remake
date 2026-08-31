@@ -228,7 +228,7 @@ begin
   for K := 0 to High(Button_BlockSWMachines) do
   begin
     W := MACHINES_ORDER[Button_BlockSWMachines[K].Tag];
-    blocked := gMySpectator.Hand.Locks.GetUnitBlocked(W, True);
+    blocked := gMySpectator.Hand.Locks.GetUnitBlocked(W);
     if blocked then
       Image_BlockSWMachines[K].TexID := 32
     else if not blocked then
