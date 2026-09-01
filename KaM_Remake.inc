@@ -82,6 +82,7 @@
 {$ENDIF}
 
 {$DEFINE DBG_RNG_SPY}
+{$DEFINE SIEGE}
 
 // Enable some debug features
 {.$DEFINE DEBUG}
