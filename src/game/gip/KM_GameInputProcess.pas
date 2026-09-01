@@ -154,7 +154,7 @@ type
 const
   BLOCKED_BY_PEACETIME: set of TKMGameInputCommandType = [gicArmySplit, gicArmySplitSingle,
     gicArmyLink, gicArmyAttackUnit, gicArmyAttackHouse, gicArmyHalt,
-    gicArmyFormation,  gicArmyWalk, gicArmyStorm, gicHouseBarracksEquip, gicHouseTownHallEquip];
+    gicArmyFormation,  gicArmyWalk, gicArmyStorm, gicHouseBarracksEquip, gicHouseTownHallEquip, gicHouseSiegeWorkshopEquip];
 
   ALLOWED_AFTER_DEFEAT: set of TKMGameInputCommandType =
     [gicGameAlertBeacon, gicGameSpeed, gicGameAutoSave, gicGameAutoSaveAfterPT, gicGameSaveReturnLobby, gicGameLoadSave,

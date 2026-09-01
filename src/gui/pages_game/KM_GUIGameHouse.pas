@@ -1091,7 +1091,8 @@ begin
     Image_MachineScroll[I].Enabled        := unitGranted;
     NumEdit_MachineOrderRem[I].Enabled    := unitGranted;
     NumEdit_MachineOrderAdd[I].Enabled    := unitGranted;
-    Button_StoredMachinesEquip[I].Enabled := unitGranted and (siegeWorkshop.StoredMachines[I + 1] > 0);
+    Button_StoredMachinesEquip[I].Enabled := unitGranted and (siegeWorkshop.StoredMachines[I + 1] > 0)
+                                              and not gGame.IsPeaceTime ;
 
 
     Image_MachineScroll[I].FlagColor := gHands[aHouse.Owner].GameFlagColor;
