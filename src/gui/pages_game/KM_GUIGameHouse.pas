@@ -621,11 +621,12 @@ begin
   top := 163;
   for I := 0 to 1 do
   begin
-    Ut := MACHINES_ORDER[I + 1];
+    UT := MACHINES_ORDER[I + 1];
     Button_StoredMachinesCnt[I] := TKMButtonFlat.Create(Panel_HouseSiegeWorkshop,
                                           28 + (I mod 2) * (TB_WIDTH div 2),//left
                                           top + (I div 2) * 130,
                                           34, 36, gRes.Units[UT].GUIIcon);
+    Button_StoredMachinesCnt[I].Hint := gRes.Units[UT].GUIName;
 
     Button_StoredMachinesEquip[I] := TKMButton.Create(Panel_HouseSiegeWorkshop,
                                                       18 + (I mod 2) * (TB_WIDTH div 2),//left
@@ -634,6 +635,7 @@ begin
                                                       42, rxGui, bsGame);
 
      Button_StoredMachinesEquip[I].OnClickShift := House_SiegeWorkshopChange;
+     Button_StoredMachinesEquip[I].Hint := 'Equip siege machine: ' + gRes.Units[UT].GUIName;
   end;
 
   Panel_HouseSiegeWorkshop.Height := 150;
@@ -1013,7 +1015,7 @@ begin
 
   for I := 0 to 1 do
     if not gMySpectator.Hand.Locks.GetUnitBlocked(MACHINES_ORDER[I + 1]) then
-      Button_StoredMachinesEquip[I].Hint := gResTexts[TX_HOUSE_BARRACKS_TRAIN_DISABLED_HINT]
+      Button_StoredMachinesEquip[I].Hint := 'Equip siege machine: ' + gRes.Units[MACHINES_ORDER[I + 1]].GUIName
     else
       Button_StoredMachinesEquip[I].Hint := gResTexts[TX_HOUSE_BARRACKS_TRAIN_DISABLED_HINT];
 end;
@@ -1096,6 +1098,8 @@ begin
 
 
     Image_MachineScroll[I].FlagColor := gHands[aHouse.Owner].GameFlagColor;
+    Button_StoredMachinesCnt[I].FlagColor := gHands[aHouse.Owner].GameFlagColor;
+
     Label_MachineOrderCnt[I].Caption := aHouse.WareOrder[I + 1].ToString;
     Button_StoredMachinesCnt[I].Caption := IntToStr(siegeWorkshop.StoredMachines[I + 1]);
   end;
