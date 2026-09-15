@@ -177,8 +177,8 @@ const
   MapEd_Icon: array [0..15] of Word = (
     61, 62, 63, 64, 65,
     66, 67, 68, 69, 70,
-    79, 80, 81, 82, 141,
-    141);
+    79, 80, 81, 82, 679,
+    680);
 
   Animal_Order: array [0..7] of TKMUnitType = (
     utWolf, utFish,        utWatersnake, utSeastar,
