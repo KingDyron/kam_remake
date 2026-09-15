@@ -230,9 +230,17 @@ end;
 
 procedure TKMScriptPreProcessor.ScriptOnProcessDirective(Sender: TPSPreProcessor; Parser: TPSPascalPreProcessorParser; const Active: Boolean;
                                                             const DirectiveName, DirectiveParam: tbtString; var aContinue: Boolean);
+
 const
   CUSTOM_TH_TROOP_COST_DIRECTIVE = 'CUSTOM_TH_TROOP_COST';
   CUSTOM_MARKET_GOLD_PRICE_DIRECTIVE = 'CUSTOM_MARKET_GOLD_PRICE_X';
+
+const
+  CUSTOM_SIEGE_DIRECTIVE = 'CUSTOM_SIEGE_DATA';
+  SIEGE_BALLISTA_NAME = 'BALLISTA';
+  SIEGE_CATAPULT_NAME = 'CATAPULT';
+  CUSTOM_SIEGE_PARAMETER: array[TKMUnitScriptParam] of AnsiString = ('ATTACK', 'ATTACK_HORSE', 'DEFENCE', 'SPEED', 'HIT_POINTS',
+                                                       'UNIT_DAMAGE', 'HOUSE_DAMAGE', 'STAGES_COUNT', 'PROJECTILE_DEFENCE');
 
   procedure LoadCustomTHTroopCost;
   var
@@ -383,6 +391,143 @@ const
     end;
   end;
 
+  procedure LoadCustomSiegeData;
+  var
+    I: Integer;
+    errorStr: UnicodeString;
+    directiveSubData, dirSubDataParams: TStringList;
+    hasError: Boolean;
+    UT : TKMUnitType;
+    SP : TKMUnitScriptParam;
+    sMachineData : TKMUnitScriptData;
+    paramValue : Integer;
+    cleanedParamStr : String;
+
+  begin
+    if UpperCase(DirectiveName) = UpperCase(CUSTOM_SIEGE_DIRECTIVE) then
+    begin
+      aContinue := False; //Custom directive should not be proccesed any further by pascal script preprocessor, as it will cause an error
+      //reset every parameter
+      for UT := utCatapult to utBallista do
+        for SP := low(TKMUnitScriptParam) to high(TKMUnitScriptParam) do
+          sMachineData[UT, SP] := -1;
+
+      try
+        directiveSubData := TStringList.Create;
+        dirSubDataParams := TStringList.Create;
+        try
+
+          cleanedParamStr := DirectiveParam;
+          cleanedParamStr := cleanedParamStr.Replace(#32, '');
+          cleanedParamStr := cleanedParamStr.Replace(#9, '');
+          cleanedParamStr := cleanedParamStr.Replace(#13, '');
+          cleanedParamStr := cleanedParamStr.Replace(#10, '');
+
+          StringSplit(cleanedParamStr, ',', directiveSubData);
+
+          hasError := False;
+          If directiveSubData.Count = 0 then
+          begin
+            hasError := True;
+            fErrorHandler.AppendErrorStr(Format('Directive ''%s'' has wrong number of parameters: expected %s, actual: %d. At [%d:%d]' + sLineBreak,
+                                                [CUSTOM_TH_TROOP_COST_DIRECTIVE, 'atleast 1', directiveSubData.Count,
+                                                 Parser.Row, Parser.Col]));
+            if fValidationIssues <> nil then
+              fValidationIssues.AddError(Parser.Row, Parser.Col, CUSTOM_TH_TROOP_COST_DIRECTIVE,
+                                         Format('Wrong number of parameters: expected %s, actual: %d',
+                                                ['atleast 1', directiveSubData.Count]));
+
+          end;
+
+          //check every parameter.
+          //First we need machine type, otherwise we cannot set new data
+
+          UT := utNone;
+          for I := 0 to directiveSubData.Count - 1 do
+          begin
+            If UpperCase(directiveSubData[I]) = UpperCase(SIEGE_BALLISTA_NAME) then
+            begin
+              UT := utBallista;
+              Continue;
+            end else
+            If UpperCase(directiveSubData[I]) = UpperCase(SIEGE_CATAPULT_NAME) then
+            begin
+              UT := utCatapult;
+              Continue;
+            end;
+
+            //unit type was not set before so we have to skip this parameter
+            If UT = utNone then
+              Continue;
+
+            StringSplit(directiveSubData[I], '=', dirSubDataParams);
+
+            If dirSubDataParams.Count <> 2 then
+            begin
+              hasError := True;
+              fErrorHandler.AppendErrorStr(Format('Directive ''%s'' has wrong number of parameters: expected %d, actual: %d. At [%d:%d]' + sLineBreak,
+                                                  [CUSTOM_TH_TROOP_COST_DIRECTIVE, 2, dirSubDataParams.Count,
+                                                   Parser.Row, Parser.Col]));
+              if fValidationIssues <> nil then
+                fValidationIssues.AddError(Parser.Row, Parser.Col, CUSTOM_TH_TROOP_COST_DIRECTIVE,
+                                           Format('Wrong number of parameters: expected %d, actual: %d',
+                                                  [2, dirSubDataParams.Count]));
+
+            end;
+
+            for SP := Low(TKMUnitScriptParam) to High(TKMUnitScriptParam) do
+            If  UpperCase(dirSubDataParams[0]) = UpperCase(CUSTOM_SIEGE_PARAMETER[SP]) then
+            begin
+              paramValue := 0;
+
+              If TryStrToInt(dirSubDataParams[1], paramValue) and (paramValue > 0) then
+                sMachineData[UT, SP] := paramValue
+              else begin
+                hasError := True;
+                fErrorHandler.AppendErrorStr(Format('Directive ''%s'' wrong parameter: [%s] is not a number or is <1. At [%d:%d]' + sLineBreak,
+                                                    [CUSTOM_TH_TROOP_COST_DIRECTIVE, dirSubDataParams[0], Parser.Row, Parser.Col]));
+                if fValidationIssues <> nil then
+                  fValidationIssues.AddError(Parser.Row, Parser.Col, CUSTOM_TH_TROOP_COST_DIRECTIVE,
+                                             Format('Wrong directive parameter: [%s] is not a number or is <1', [dirSubDataParams[0]]));
+              end;
+              Break;
+            end;
+
+          end;
+
+          if not hasError then
+          begin
+            fCustomScriptParams[cspMachines].Added := True;
+            fCustomScriptParams[cspMachines].Data := cleanedParamStr;
+          end else
+            Exit;
+          //Do not do anything for while in MapEd
+          //But we have to allow to preprocess file, as preprocessed file used for CRC calc in MapEd aswell
+          //gGame could be nil here, but that does not change final CRC, so we can Exit
+          if not AllowGameUpdate then Exit;
+
+          for UT := utCatapult to utBallista do
+            for SP := low(TKMUnitScriptParam) to high(TKMUnitScriptParam) do
+              If sMachineData[UT,SP] > 0 then
+                SIEGE_SCRIPT_DATA[UT, SP] := sMachineData[UT,SP];
+
+        finally
+          directiveSubData.Free;
+          dirSubDataParams.Free;
+        end;
+      except
+        on E: Exception do
+          begin
+            errorStr := Format('Error loading directive ''%s'' at [%d:%d]', [Parser.Token, Parser.Row, Parser.Col]);
+            fErrorHandler.AppendErrorStr(errorStr, errorStr + ' Exception: ' + E.Message
+              {$IFDEF WDC} + sLineBreak + E.StackTrace {$ENDIF});
+            if fValidationIssues <> nil then
+              fValidationIssues.AddError(Parser.Row, Parser.Col, Parser.Token, 'Error loading directive');
+          end;
+      end;
+    end;
+  end;
+
 begin
   // Most of the scripts do not have directives.
   // save in fHasDefDirectives, when script do have IFDEF or IFNDEF directive, which might change script code after pre-processing
@@ -403,6 +548,7 @@ begin
 
   LoadCustomTHTroopCost;
   LoadCustomMarketGoldPrice;
+  LoadCustomSiegeData;
 end;
 
 

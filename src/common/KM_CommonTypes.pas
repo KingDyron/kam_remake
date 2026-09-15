@@ -82,7 +82,7 @@ type
   //Menu load type - load / no load / load unsupported version
   TKMGameStartMode = (gsmNoStart, gsmStart, gsmStartWithWarn, gsmNoStartWithWarn);
 
-  TKMCustomScriptParam = (cspTHTroopCosts, cspMarketGoldPrice);
+  TKMCustomScriptParam = (cspTHTroopCosts, cspMarketGoldPrice, cspMachines);
 
   TKMCustomScriptParamData = record
     Added: Boolean;

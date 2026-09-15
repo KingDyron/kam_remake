@@ -39,6 +39,12 @@ type
 
   TKMUnitSprite2 = array [1..18] of SmallInt; //Sound indices vs sprite ID
 
+  TKMUnitScriptParam = (spAttack,      spAttackHorse, spDefence,     spSpeed,              spHitPoints,
+                        spUnitDamage,  spHouseDamage, spStagesCount, spProjectileDefence);
+  //we only need it for the catapult and ballista
+  TKMUnitScriptData = array[utCatapult..utBallista, TKMUnitScriptParam] of Integer;
+
+
   // Common facade for unit specs that hides the legacy and modern complexities
   TKMUnitSpec = class
   private
@@ -60,6 +66,14 @@ type
     function GetUnitTextID: Integer;
     function GetUnitName: UnicodeString;
     function GetArmyPower: Single;
+
+    function GetUnitDamage : Integer;
+    function GetHouseDamage : Integer;
+    function GetHitPoints : Integer;
+    function GetAttack : Integer;
+    function GetAttackHorse : Integer;
+    function GetDefence : Integer;
+    function GetProjectileDefence : Integer;
   public
     constructor Create(aType: TKMUnitType);
     function IsValid: Boolean;
@@ -71,12 +85,14 @@ type
     function GetDefenceVsProjectiles(aIsBolt: Boolean): Single;
     procedure LoadFromStream(Stream: TMemoryStream);
     //Derived from KaM
-    property HitPoints: SmallInt read fUnitDat.HitPoints;
-    property Attack: SmallInt read fUnitDat.Attack;
-    property AttackHorse: SmallInt read fUnitDat.AttackHorse;
-    property Defence: SmallInt read fUnitDat.Defence;
+    property HitPoints: Integer read GetHitPoints;
+    property Attack: Integer read GetAttack;
+    property AttackHorse: Integer read GetAttackHorse;
+    property Defence: Integer read GetDefence;
     property Description: UnicodeString read GetDescription;
     property Sight: SmallInt read fUnitDat.Sight;
+    property UnitDamage: Integer read GetUnitDamage;
+    property HouseDamage: Integer read GetHouseDamage;
     //Additional properties added by Remake
     property ArmyPower: Single read GetArmyPower;
     property AllowedPassability: TKMTerrainPassability read GetAllowedPassability;
@@ -201,12 +217,14 @@ var
   // TownHall default units troops cost (number of gold chests needed)
   // Could be modified by script functions
   TH_TROOP_COST: array[0..4] of Byte;
+  SIEGE_SCRIPT_DATA: TKMUnitScriptData;
 
 
 implementation
 uses
   TypInfo,
-  KromUtils, KM_ResTexts;
+  KromUtils, KM_ResTexts,
+  Math;
 
 const
   STORM_SPEEDUP = 1.5;
@@ -259,9 +277,13 @@ function TKMUnitSpec.GetDefenceVsProjectiles(aIsBolt: Boolean): Single;
 const
   SHEILD_DEFENCE_BONUS_AGAINST_XBOW = 0.5;
   SHEILD_DEFENCE_BONUS_AGAINST_BOW_N_SLING = 1;
+  SIEGE_DEFENCE_BONUS_AGAINST_PROJECTILE = 3;
 begin
   Result := Defence;
   //Shielded units get a small bonus
+  If fUnitType in [utCatapult, utBallista] then
+    Result := Result + GetProjectileDefence
+  else
   if fUnitType in [utAxeFighter, utSwordFighter, utScout, utKnight] then
   begin
     if aIsBolt then
@@ -443,7 +465,70 @@ end;
 function TKMUnitSpec.GetSpeed: Single;
 begin
   // Return speed in tiles per tick (usually 0.1)
+
+  If fUnitType in [utCatapult, utBallista] then
+    Result := SIEGE_SCRIPT_DATA[fUnitType, spSpeed] / 240
+  else
   Result := fUnitDat.Speed / 240;
+end;
+
+function TKMUnitSpec.GetUnitDamage : Integer;
+begin
+  If fUnitType in [utCatapult, utBallista] then
+    Result := SIEGE_SCRIPT_DATA[fUnitType, spUnitDamage]
+  else
+    Result := 1;
+end;
+
+function TKMUnitSpec.GetHouseDamage : Integer;
+begin
+  If fUnitType in [utCatapult, utBallista] then
+    Result := SIEGE_SCRIPT_DATA[fUnitType, spHouseDamage]
+  else
+  If fUnitType in [utRogue, utBowman, utCrossbowman] then
+    Result := 1
+  else
+    Result := 2;
+end;
+
+function TKMUnitSpec.GetHitPoints : Integer;
+begin
+  If fUnitType in [utCatapult, utBallista] then
+    Result := SIEGE_SCRIPT_DATA[fUnitType, spHitPoints]
+  else
+    Result := fUnitDat.HitPoints;
+end;
+
+function TKMUnitSpec.GetAttack : Integer;
+begin
+  If fUnitType in [utCatapult, utBallista] then
+    Result := SIEGE_SCRIPT_DATA[fUnitType, spAttack]
+  else
+    Result := fUnitDat.Attack;
+end;
+
+function TKMUnitSpec.GetAttackHorse : Integer;
+begin
+  If fUnitType in [utCatapult, utBallista] then
+    Result := SIEGE_SCRIPT_DATA[fUnitType, spAttackHorse]
+  else
+    Result := fUnitDat.AttackHorse;
+end;
+
+function TKMUnitSpec.GetDefence : Integer;
+begin
+  If fUnitType in [utCatapult, utBallista] then
+    Result := SIEGE_SCRIPT_DATA[fUnitType, spDefence]
+  else
+    Result := fUnitDat.Defence;
+end;
+
+function TKMUnitSpec.GetProjectileDefence : Integer;
+begin
+  If fUnitType in [utCatapult, utBallista] then
+    Result := SIEGE_SCRIPT_DATA[fUnitType, spProjectileDefence]
+  else
+    Result := 1;
 end;
 
 
@@ -538,6 +623,7 @@ begin
   LoadUnitsDat(ExeDir + 'data' + PathDelim + 'defines' + PathDelim + 'unit.dat');
 
   //ExportCSV(ExeDir + 'units.original.csv');
+  ResetToDefaults;//needs to be here, because we need the machines speed to set up.
   PatchUnitSpec;
 
   //ExportCSV(ExeDir + 'units.remake.csv');
@@ -560,6 +646,7 @@ procedure TKMResUnits.SaveCustomData(aSaveStream: TKMemoryStream);
 begin
   aSaveStream.PlaceMarker('UnitsCustomData');
   aSaveStream.Write(TH_TROOP_COST, SizeOF(TH_TROOP_COST));
+  aSaveStream.Write(SIEGE_SCRIPT_DATA, SizeOF(SIEGE_SCRIPT_DATA));
 end;
 
 
@@ -567,6 +654,7 @@ procedure TKMResUnits.LoadCustomData(aLoadStream: TKMemoryStream);
 begin
   aLoadStream.CheckMarker('UnitsCustomData');
   aLoadStream.Read(TH_TROOP_COST, SizeOF(TH_TROOP_COST));
+  aLoadStream.Read(SIEGE_SCRIPT_DATA, SizeOF(SIEGE_SCRIPT_DATA));
 end;
 
 
@@ -671,9 +759,28 @@ end;
 procedure TKMResUnits.ResetToDefaults;
 var
   I: Integer;
+  UT : TKMUnitType;
+  SP : TKMUnitScriptParam;
 begin
   for I := Low(TH_TROOP_COST) to High(TH_TROOP_COST) do
     TH_TROOP_COST[I] := TH_DEFAULT_TROOP_COST[I];
+
+  for UT := low(SIEGE_SCRIPT_DATA) to High(SIEGE_SCRIPT_DATA) do
+    for SP := Low(TKMUnitScriptParam) to High(TKMUnitScriptParam) do
+    begin
+      case SP of
+        spAttack            : SIEGE_SCRIPT_DATA[UT,SP] := fItems[UT].fUnitDat.Attack;
+        spAttackHorse       : SIEGE_SCRIPT_DATA[UT,SP] := fItems[UT].fUnitDat.AttackHorse;
+        spDefence           : SIEGE_SCRIPT_DATA[UT,SP] := fItems[UT].fUnitDat.Defence;
+        spSpeed             : SIEGE_SCRIPT_DATA[UT,SP] := fItems[UT].fUnitDat.Speed;
+        spHitPoints         : SIEGE_SCRIPT_DATA[UT,SP] := fItems[UT].fUnitDat.HitPoints;
+        spUnitDamage        : SIEGE_SCRIPT_DATA[UT,SP] := IfThen(UT = utBallista, 2, 1);
+        spHouseDamage       : SIEGE_SCRIPT_DATA[UT,SP] := IfThen(UT = utCatapult, 19, 6);
+        spStagesCount       : SIEGE_SCRIPT_DATA[UT,SP] := 5;
+        spProjectileDefence : SIEGE_SCRIPT_DATA[UT,SP] := 3;
+      end;
+    end;
+
 end;
 
 

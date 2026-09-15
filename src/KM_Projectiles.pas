@@ -328,7 +328,7 @@ begin
 
                               if (FRIENDLY_FIRE or (gHands.CheckAlliance(fOwner.Owner, U.Owner)= atEnemy))
                               and (Damage >= KaMRandom(101{$IFDEF DBG_RNG_SPY}, 'TKMProjectiles.UpdateState'{$ENDIF})) then
-                                U.HitPointsDecrease(1, fOwner);
+                                U.HitPointsDecrease(gRes.Units[fOwner.UnitType].UnitDamage, fOwner);
                             end
                             else
                             begin
@@ -337,9 +337,9 @@ begin
                               and (FRIENDLY_FIRE or (gHands.CheckAlliance(fOwner.Owner, H.Owner)= atEnemy))
                               then
                               begin
-                                Damage := 1;
-                                If fType = ptCatapultRock then Damage := 10;
-                                If fType = ptBallistaBolt then Damage := 2;
+                                Damage := gRes.Units[fOwner.UnitType].HouseDamage;
+                                //If fType = ptCatapultRock then Damage := 10;
+                                //If fType = ptBallistaBolt then Damage := 2;
 
                                 H.AddDamage(Damage, fOwner);
                               end;
