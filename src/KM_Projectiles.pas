@@ -321,10 +321,16 @@ begin
                               if fType = ptCatapultRock then  Damage := gRes.Units[utCatapult].Attack;
                               if fType = ptBallistaBolt then  Damage := gRes.Units[utBallista].Attack;
 
+                              if (U.UnitType in [Low(UNIT_TO_GROUP_TYPE) .. High(UNIT_TO_GROUP_TYPE)])
+                              and (UNIT_TO_GROUP_TYPE[U.UnitType] = gtMounted) then
+                                Damage := Damage + gRes.Units[fOwner.UnitType].AttackHorse;
+
+
                               IF fType = ptBallistaBolt then //don't ignore defence fully for ballista. Let's divide it instead
                                 Damage := Round(Damage / Math.max(gRes.Units[U.UnitType].GetDefenceVsProjectiles(true) * 0.65, 1)) //Max is not needed, but animals have 0 defence
                               else
                                 Damage := Round(Damage / Math.max(gRes.Units[U.UnitType].GetDefenceVsProjectiles(fType = ptBolt), 1)); //Max is not needed, but animals have 0 defence
+
 
                               if (FRIENDLY_FIRE or (gHands.CheckAlliance(fOwner.Owner, U.Owner)= atEnemy))
                               and (Damage >= KaMRandom(101{$IFDEF DBG_RNG_SPY}, 'TKMProjectiles.UpdateState'{$ENDIF})) then
