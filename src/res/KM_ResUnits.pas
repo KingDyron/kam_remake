@@ -39,8 +39,9 @@ type
 
   TKMUnitSprite2 = array [1..18] of SmallInt; //Sound indices vs sprite ID
 
-  TKMUnitScriptParam = (spAttack,      spAttackHorse, spDefence,     spSpeed,              spHitPoints,
-                        spUnitDamage,  spHouseDamage, spStagesCount, spProjectileDefence);
+  TKMUnitScriptParam = (spAttack,         spAttackHorse, spDefence,     spSpeed,              spHitPoints,
+                        spUnitDamage,     spHouseDamage, spStagesCount, spProjectileDefence,  spAimingDelayMin,
+                        spAimingDelayAdd);
   //we only need it for the catapult and ballista
   TKMUnitScriptData = array[utCatapult..utBallista, TKMUnitScriptParam] of Integer;
 
@@ -136,6 +137,9 @@ type
     property CRC: Cardinal read fCRC; //Return hash of all values
 
     procedure ExportCSV(const aPath: UnicodeString);
+
+    function GetSiegeAimingDelayMin(aUnitType : TKMUnitType) : Byte;
+    function GetSiegeAimingDelayAdd(aUnitType : TKMUnitType) : Byte;
 
     procedure SaveCustomData(aSaveStream: TKMemoryStream);
     procedure LoadCustomData(aLoadStream: TKMemoryStream);
@@ -705,6 +709,19 @@ begin
     fItems[utVagabond].fUnitDat.Speed := 40;
 end;
 
+function TKMResUnits.GetSiegeAimingDelayMin(aUnitType : TKMUnitType) : Byte;
+begin
+  Assert(aUnitType in WARRIOR_MACHINE);
+  Result := SIEGE_SCRIPT_DATA[aUnitType, spAimingDelayMin];
+
+end;
+
+function TKMResUnits.GetSiegeAimingDelayAdd(aUnitType : TKMUnitType) : Byte;
+begin
+  Assert(aUnitType in WARRIOR_MACHINE);
+  Result := SIEGE_SCRIPT_DATA[aUnitType, spAimingDelayAdd];
+end;
+
 
 procedure TKMResUnits.ExportCSV(const aPath: UnicodeString);
 var
@@ -781,7 +798,8 @@ begin
         spUnitDamage        : SIEGE_SCRIPT_DATA[UT,SP] := IfThen(UT = utBallista, 2, 1);
         spHouseDamage       : SIEGE_SCRIPT_DATA[UT,SP] := IfThen(UT = utCatapult, 19, 6);
         spStagesCount       : SIEGE_SCRIPT_DATA[UT,SP] := 5;
-        spProjectileDefence : SIEGE_SCRIPT_DATA[UT,SP] := 3;
+        spAimingDelayMin    : SIEGE_SCRIPT_DATA[UT,SP] := IfThen(UT = utBallista, 12, 12);
+        spAimingDelayAdd    : SIEGE_SCRIPT_DATA[UT,SP] := IfThen(UT = utBallista, 8, 16);
       end;
     end;
 

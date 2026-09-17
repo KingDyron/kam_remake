@@ -803,11 +803,6 @@ const
   CROSSBOWMAN_AIMING_DELAY_MIN = 8; //minimum time for crossbowman to aim
   CROSSBOWMAN_AIMING_DELAY_ADD = 8; //random component
 
-  CATAPULT_AIMING_DELAY_MIN = 12; //minimum time for catapult to aim
-  CATAPULT_AIMING_DELAY_ADD = 16; //random component
-  BALLISTA_AIMING_DELAY_MIN = 12; //minimum time for balista to aim
-  BALLISTA_AIMING_DELAY_ADD = 8; //random component
-
 begin
   Result := 0;
   if IsRanged then
@@ -815,8 +810,10 @@ begin
       utBowman:       Result := BOWMAN_AIMING_DELAY_MIN + KaMRandom(BOWMAN_AIMING_DELAY_ADD{$IFDEF DBG_RNG_SPY}, 'TKMUnitWarrior.GetAimingDelay'{$ENDIF});
       utCrossbowman:  Result := CROSSBOWMAN_AIMING_DELAY_MIN + KaMRandom(CROSSBOWMAN_AIMING_DELAY_ADD{$IFDEF DBG_RNG_SPY}, 'TKMUnitWarrior.GetAimingDelay 2'{$ENDIF});
       utRogue:        Result := ROGUE_AIMING_DELAY_MIN + KaMRandom(ROGUE_AIMING_DELAY_ADD{$IFDEF DBG_RNG_SPY}, 'TKMUnitWarrior.GetAimingDelay 3'{$ENDIF});
-      utCatapult:        Result := CATAPULT_AIMING_DELAY_MIN + KaMRandom(CATAPULT_AIMING_DELAY_ADD{$IFDEF DBG_RNG_SPY}, 'TKMUnitWarrior.GetAimingDelay 4'{$ENDIF});
-      utBallista:        Result := BALLISTA_AIMING_DELAY_MIN + KaMRandom(BALLISTA_AIMING_DELAY_ADD{$IFDEF DBG_RNG_SPY}, 'TKMUnitWarrior.GetAimingDelay 5'{$ENDIF});
+
+      utCatapult,
+      utBallista:        Result := gRes.Units.GetSiegeAimingDelayMin(UnitType)
+                                    + KaMRandom(gRes.Units.GetSiegeAimingDelayAdd(UnitType){$IFDEF DBG_RNG_SPY}, 'TKMUnitWarrior.GetAimingDelay 4'{$ENDIF});
     else
       raise Exception.Create('Unknown shooter');
     end;

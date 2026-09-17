@@ -240,7 +240,8 @@ const
   SIEGE_BALLISTA_NAME = 'BALLISTA';
   SIEGE_CATAPULT_NAME = 'CATAPULT';
   CUSTOM_SIEGE_PARAMETER: array[TKMUnitScriptParam] of AnsiString = ('ATTACK', 'ATTACK_HORSE', 'DEFENCE', 'SPEED', 'HIT_POINTS',
-                                                       'UNIT_DAMAGE', 'HOUSE_DAMAGE', 'STAGES_COUNT', 'PROJECTILE_DEFENCE');
+                                                       'UNIT_DAMAGE', 'HOUSE_DAMAGE', 'STAGES_COUNT', 'PROJECTILE_DEFENCE', 'AIMING_DELAY_MIN',
+                                                       'AIMING_DELAY_ADD');
 
   procedure LoadCustomTHTroopCost;
   var
