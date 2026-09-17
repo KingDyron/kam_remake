@@ -10,9 +10,9 @@ const
   // These have been adjusted slightly from the old KaM defaults.
   // The number means how many items should be in houses input max, and also affects delivery priority.
   DISTRIBUTION_DEFAULTS: array [1..4, 1..4] of Byte = (
-    (5, 5, 0, 0),
+    (5, 5, 4, 0),
     (3, 5, 3, 3),
-    (2, 5, 0, 0),
+    (2, 5, 4, 0),
     (4, 5, 3, 0)
   );
 
@@ -52,14 +52,16 @@ end;
 procedure TKMWareDistribution.SetWareDistribution(aWare: TKMWareType; aHouse: TKMHouseType; aValue: Byte);
 begin
   case aWare of
-    wtIron:  if aHouse = htWeaponSmithy   then fWareDistribution[1,1] := aValue else
-              if aHouse = htArmorSmithy    then fWareDistribution[1,2] := aValue;
+    wtIron:  if aHouse = htWeaponSmithy       then fWareDistribution[1,1] := aValue else
+              if aHouse = htArmorSmithy       then fWareDistribution[1,2] := aValue else
+              if aHouse = htSiegeWorkshop     then fWareDistribution[1,3] := aValue;
     wtCoal:   if aHouse = htIronSmithy     then fWareDistribution[2,1] := aValue else
               if aHouse = htMetallurgists  then fWareDistribution[2,2] := aValue else
               if aHouse = htWeaponSmithy   then fWareDistribution[2,3] := aValue else
               if aHouse = htArmorSmithy    then fWareDistribution[2,4] := aValue;
-    wtTimber:   if aHouse = htArmorWorkshop  then fWareDistribution[3,1] := aValue else
-              if aHouse = htWeaponWorkshop then fWareDistribution[3,2] := aValue;
+    wtTimber:   if aHouse = htArmorWorkshop   then fWareDistribution[3,1] := aValue else
+              if aHouse = htWeaponWorkshop    then fWareDistribution[3,2] := aValue else
+              if aHouse = htSiegeWorkshop     then fWareDistribution[3,3] := aValue;
     wtCorn:   if aHouse = htMill           then fWareDistribution[4,1] := aValue else
               if aHouse = htSwine          then fWareDistribution[4,2] := aValue else
               if aHouse = htStables        then fWareDistribution[4,3] := aValue;
@@ -72,14 +74,16 @@ function TKMWareDistribution.GetWareDistribution(aWare: TKMWareType; aHouse: TKM
 begin
   Result := 5; //Default should be 5, for house/resource combinations that don't have a setting (on a side note this should be the only place the resourse limit is defined)
   case aWare of
-    wtIron:  if aHouse = htWeaponSmithy   then Result := fWareDistribution[1,1] else
-              if aHouse = htArmorSmithy    then Result := fWareDistribution[1,2];
+    wtIron:  if aHouse = htWeaponSmithy     then Result := fWareDistribution[1,1] else
+              if aHouse = htArmorSmithy     then Result := fWareDistribution[1,2] else
+              if aHouse = htSiegeWorkshop   then Result := fWareDistribution[1,3];
     wtCoal:   if aHouse = htIronSmithy     then Result := fWareDistribution[2,1] else
               if aHouse = htMetallurgists  then Result := fWareDistribution[2,2] else
               if aHouse = htWeaponSmithy   then Result := fWareDistribution[2,3] else
               if aHouse = htArmorSmithy    then Result := fWareDistribution[2,4];
-    wtTimber:   if aHouse = htArmorWorkshop  then Result := fWareDistribution[3,1] else
-              if aHouse = htWeaponWorkshop then Result := fWareDistribution[3,2];
+    wtTimber:   if aHouse = htArmorWorkshop   then Result := fWareDistribution[3,1] else
+              if aHouse = htWeaponWorkshop    then Result := fWareDistribution[3,2] else
+              if aHouse = htSiegeWorkshop     then Result := fWareDistribution[3,3];
     wtCorn:   if aHouse = htMill           then Result := fWareDistribution[4,1] else
               if aHouse = htSwine          then Result := fWareDistribution[4,2] else
               if aHouse = htStables        then Result := fWareDistribution[4,3];

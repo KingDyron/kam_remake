@@ -44,11 +44,11 @@ uses
 const
   RES_RATIO_TYPE: array [TKMRatioTab] of TKMWareType = (wtIron, wtCoal, wtTimber, wtCorn);
   //ResRatioHint: array [TKMRatioTab] of Word = (298, 300, 302, 304);
-  RES_RATIO_HOUSE_CNT: array [TKMRatioTab] of Byte = (2, 4, 2, 3);
+  RES_RATIO_HOUSE_CNT: array [TKMRatioTab] of Byte = (3, 4, 3, 3);
   RES_RATIO_HOUSE: array [TKMRatioTab, 0..3] of TKMHouseType = (
-      (htWeaponSmithy,   htArmorSmithy,     htNone,          htNone),
+      (htWeaponSmithy,   htArmorSmithy,     htSiegeWorkshop, htNone),
       (htIronSmithy,     htMetallurgists,   htWeaponSmithy,  htArmorSmithy),
-      (htArmorWorkshop,  htWeaponWorkshop,  htNone,          htNone),
+      (htArmorWorkshop,  htWeaponWorkshop,  htSiegeWorkshop, htNone),
       (htMill,           htSwine,           htStables,       htNone));
 
   HEADER_BASELINE_Y = 80;
