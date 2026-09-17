@@ -37,7 +37,7 @@ const
     {$IFDEF WDC64} + ' [x64]' {$ENDIF}
     {$IFDEF DBG_RNG_SPY} + ' [RNGSPY]' {$ENDIF}
     {$IFDEF DBG_PERFLOG} + ' [PERFLOG]' {$ENDIF}
-    {$IFDEF SIEGE} + ' [SIEGE]' {$ENDIF}
+    {$IFDEF SIEGE} + ' [SIEGE v1.1]' {$ENDIF}
     ;
 
   GAME_VERSION_PREFIX   = ''; // Custom prefix for the test builds
