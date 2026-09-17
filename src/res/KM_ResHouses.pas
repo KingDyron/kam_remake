@@ -124,9 +124,11 @@ type
     //Swine&Horses, 5 beasts in each house, 3 ages for each beast
     fBeastAnim: array [1..2,1..5,1..3] of TKMAnimLoop;
     fMarketBeastAnim: array [1..3] of TKMAnimLoop;
+    fSiegeWorkshopParts: array[1..2, 1..4] of Word;
     function LoadHouseDat(const aPath: string): Cardinal;
     function GetHouse(aType: TKMHouseType): TKMHouseSpec; inline;
     function GetBeastAnim(aType: TKMHouseType; aBeast, aAge:integer): TKMAnimLoop;
+    function GetSiegeWorkshopPart(aIndex, aStage : Integer) : Word;
   public
     constructor Create;
     destructor Destroy; override;
@@ -135,6 +137,7 @@ type
 
     property Houses[aType: TKMHouseType]: TKMHouseSpec read GetHouse; default;
     property BeastAnim[aType: TKMHouseType; aBeast, aAge: Integer]: TKMAnimLoop read GetBeastAnim;
+    property SiegeWorskhopParts[aIndex, aStage : Integer] : Word read GetSiegeWorkshopPart;
     property CRC: Cardinal read fCRC; //Return hash of all values
 
     procedure ExportCSV(const aPath: string);
@@ -858,6 +861,16 @@ begin
   fMarketBeastAnim[2].MoveX := MARKET_WARES_OFF_X;
   fMarketBeastAnim[2].MoveY := MARKET_WARES_OFF_Y;
 
+  //catapult
+  fSiegeWorkshopParts[1, 1] := 2081;
+  fSiegeWorkshopParts[1, 2] := 2082;
+  fSiegeWorkshopParts[1, 3] := 2083;
+  fSiegeWorkshopParts[1, 4] := 2084;
+  //ballista
+  fSiegeWorkshopParts[2, 1] := 2085;
+  fSiegeWorkshopParts[2, 2] := 2086;
+  fSiegeWorkshopParts[2, 3] := 2087;
+  fSiegeWorkshopParts[2, 4] := 2088;
   //ExportCSV(ExeDir+'Houses.csv');
 end;
 
@@ -895,6 +908,12 @@ begin
     htStables:  Result := fBeastAnim[2, aBeast, aAge];
     htMarket:   Result := fMarketBeastAnim[aBeast];
   end;
+end;
+
+function TKMResHouses.GetSiegeWorkshopPart(aIndex, aStage : Integer) : Word;
+begin
+  Assert((aIndex in [1, 2]) and (aStage in [1..4]));
+  Result := fSiegeWorkshopParts[aIndex, aStage];
 end;
 
 

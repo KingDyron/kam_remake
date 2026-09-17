@@ -31,6 +31,8 @@ type
     property StoredMachines[aIndex : Integer] : Word read GetStoredMachines;
 
     function ObjToString(const aSeparator: string = '|'): string; override;
+
+    procedure Paint; override;
   end;
 
 
@@ -39,6 +41,7 @@ uses
   SysUtils, TypInfo,
   KM_ScriptingEvents,
   KM_HandsCollection,
+  KM_RenderPool,
   KM_UnitWarrior;
 
 
@@ -190,6 +193,23 @@ begin
 
   If fMachinesStage[aOrderID] >= 5 then
     FinishOrder(aOrderID);
+end;
+
+procedure TKMHouseSiegeWorkshop.Paint;
+var I : Integer;
+begin
+  inherited;
+
+  if fBuildState = hbsDone then
+    for I := 1 to 2 do
+      if fMachinesStage[I] > 0 then
+        gRenderPool.AddHouseSiegeParts(HouseType, fPosition, I, fMachinesStage[I], gHands[Owner].GameFlagColor);
+
+  //render carpenter on top of the siege parts
+  if CurrentAction <> nil then
+    gRenderPool.AddHouseWork(HouseType, fPosition,
+                            CurrentAction.SubAction * [haWork1, haWork2, haWork3, haWork4, haWork5],
+                            WorkAnimStep, WorkAnimStepPrev, gHands[Owner].GameFlagColor);
 end;
 
 end.

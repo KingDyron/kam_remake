@@ -126,6 +126,7 @@ type
     procedure AddHouseSupply(aHouse: TKMHouseType; const aLoc: TKMPoint; const R1, R2: array of Word; const R3: array of Byte; aDoImmediateRender: Boolean = False; aDoHighlight: Boolean = False; aHighlightColor: TColor4 = 0);
     procedure AddHouseMarketSupply(const aLoc: TKMPoint; aResType: TKMWareType; aResCount: Word; aAnimStep: Integer);
     procedure AddHouseStableBeasts(aHouse: TKMHouseType; const aLoc: TKMPoint; aBeastId,aBeastAge,aAnimStep: Integer; aRX: TRXType = rxHouses);
+    procedure AddHouseSiegeParts(aHouse: TKMHouseType; const aLoc: TKMPoint; aSiegeId,aSiegeStage: Integer; aColor : Cardinal; aRX: TRXType = rxHouses);
     procedure AddHouseEater(const aLoc: TKMPoint; aUnit: TKMUnitType; aAct: TKMUnitActionType; aDir: TKMDirection; aStepId: Integer; aOffX, aOffY: Single; aFlagColor: TColor4);
     procedure AddUnit(aUnit: TKMUnitType; aUID: Integer; aAct: TKMUnitActionType; aDir: TKMDirection; StepId: Integer; StepFrac: Single; pX,pY: Single; FlagColor: TColor4; NewInst: Boolean; DoImmediateRender: Boolean = False; DoHighlight: Boolean = False; HighlightColor: TColor4 = 0);
     procedure AddUnitCarry(aCarry: TKMWareType; aUID: Integer; aDir: TKMDirection; aStepId: Integer; aStepFrac: Single; pX,pY: Single; aFlagColor: TColor4);
@@ -990,6 +991,21 @@ begin
   cornerY := aLoc.Y + (A.MoveY + rxData.Pivot[id].Y + rxData.Size[id].Y) / CELL_SIZE_PX - 1
                    - gTerrain.LandExt^[aLoc.Y + 1, aLoc.X].RenderHeight / CELL_HEIGHT_DIV;
   fRenderList.AddSprite(aRX, id, cornerX, cornerY);
+end;
+
+procedure TKMRenderPool.AddHouseSiegeParts(aHouse: TKMHouseType; const aLoc: TKMPoint; aSiegeId: Integer; aSiegeStage: Integer; aColor : Cardinal; aRX: TRXType = rxHouses);
+var
+  cornerX, cornerY: Single;
+  id: Integer;
+  rxData: TRXData;
+begin
+  rxData := fRXData[aRX];
+  id := gRes.Houses.SiegeWorskhopParts[aSiegeID, aSiegeStage];
+
+  cornerX := aLoc.X + (rxData.Pivot[id].X) / CELL_SIZE_PX - 1;
+  cornerY := aLoc.Y + (rxData.Pivot[id].Y + rxData.Size[id].Y) / CELL_SIZE_PX - 1
+                   - gTerrain.LandExt^[aLoc.Y + 1, aLoc.X].RenderHeight / CELL_HEIGHT_DIV;
+  fRenderList.AddSprite(aRX, id, cornerX, cornerY, aColor);
 end;
 
 
