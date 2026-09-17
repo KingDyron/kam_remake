@@ -149,7 +149,7 @@ begin
     for I := 0 to 3 do
     begin
       resI := ((fLastOrderProduced + I) mod 4) + 1;
-      If WareOrder[resI] > 0 then
+      If (WareOrder[resI] > 0) or ( (resI in [1, 2]) and (fMachinesStage[resI] > 0)) then
       begin
         Result := resI;
         Break;
@@ -159,7 +159,8 @@ begin
 
   if Result <> 0 then
   begin
-    WareOrder[Result] := WareOrder[Result] - 1;
+    If fMachinesStage[Result] = 0 then
+      WareOrder[Result] := WareOrder[Result] - 1;
     fLastOrderProduced := Result;
     fNeedIssueOrderCompletedMsg := True;
     fOrderCompletedMsgIssued := False;
