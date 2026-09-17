@@ -59,7 +59,7 @@ end;
 constructor TKMHouseSiegeWorkshop.Load(LoadStream: TKMemoryStream);
 begin
   inherited;
-  LoadStream.PlaceMarker('House Siege Workshop');
+  LoadStream.CheckMarker('House Siege Workshop');
   LoadStream.Read(fStoredMachines, SizeOf(fStoredMachines));
   LoadStream.Read(fMachinesStage, SizeOf(fMachinesStage));
 end;
@@ -67,7 +67,7 @@ end;
 procedure TKMHouseSiegeWorkshop.Save(SaveStream: TKMemoryStream);
 begin
   inherited;
-  SaveStream.CheckMarker('House Siege Workshop');
+  SaveStream.PlaceMarker('House Siege Workshop');
   SaveStream.Write(fStoredMachines, SizeOf(fStoredMachines));
   SaveStream.Write(fMachinesStage, SizeOf(fMachinesStage));
 end;
