@@ -430,10 +430,10 @@ const
           begin
             hasError := True;
             fErrorHandler.AppendErrorStr(Format('Directive ''%s'' has wrong number of parameters: expected %s, actual: %d. At [%d:%d]' + sLineBreak,
-                                                [CUSTOM_TH_TROOP_COST_DIRECTIVE, 'atleast 1', directiveSubData.Count,
+                                                [CUSTOM_SIEGE_DIRECTIVE, 'atleast 1', directiveSubData.Count,
                                                  Parser.Row, Parser.Col]));
             if fValidationIssues <> nil then
-              fValidationIssues.AddError(Parser.Row, Parser.Col, CUSTOM_TH_TROOP_COST_DIRECTIVE,
+              fValidationIssues.AddError(Parser.Row, Parser.Col, CUSTOM_SIEGE_DIRECTIVE,
                                          Format('Wrong number of parameters: expected %s, actual: %d',
                                                 ['atleast 1', directiveSubData.Count]));
 
@@ -466,10 +466,10 @@ const
             begin
               hasError := True;
               fErrorHandler.AppendErrorStr(Format('Directive ''%s'' has wrong number of parameters: expected %d, actual: %d. At [%d:%d]' + sLineBreak,
-                                                  [CUSTOM_TH_TROOP_COST_DIRECTIVE, 2, dirSubDataParams.Count,
+                                                  [CUSTOM_SIEGE_DIRECTIVE, 2, dirSubDataParams.Count,
                                                    Parser.Row, Parser.Col]));
               if fValidationIssues <> nil then
-                fValidationIssues.AddError(Parser.Row, Parser.Col, CUSTOM_TH_TROOP_COST_DIRECTIVE,
+                fValidationIssues.AddError(Parser.Row, Parser.Col, CUSTOM_SIEGE_DIRECTIVE,
                                            Format('Wrong number of parameters: expected %d, actual: %d',
                                                   [2, dirSubDataParams.Count]));
 
@@ -485,9 +485,9 @@ const
               else begin
                 hasError := True;
                 fErrorHandler.AppendErrorStr(Format('Directive ''%s'' wrong parameter: [%s] is not a number or is <1. At [%d:%d]' + sLineBreak,
-                                                    [CUSTOM_TH_TROOP_COST_DIRECTIVE, dirSubDataParams[0], Parser.Row, Parser.Col]));
+                                                    [CUSTOM_SIEGE_DIRECTIVE, dirSubDataParams[0], Parser.Row, Parser.Col]));
                 if fValidationIssues <> nil then
-                  fValidationIssues.AddError(Parser.Row, Parser.Col, CUSTOM_TH_TROOP_COST_DIRECTIVE,
+                  fValidationIssues.AddError(Parser.Row, Parser.Col, CUSTOM_SIEGE_DIRECTIVE,
                                              Format('Wrong directive parameter: [%s] is not a number or is <1', [dirSubDataParams[0]]));
               end;
               Break;
@@ -510,6 +510,7 @@ const
             for SP := low(TKMUnitScriptParam) to high(TKMUnitScriptParam) do
               If sMachineData[UT,SP] > 0 then
                 SIEGE_SCRIPT_DATA[UT, SP] := sMachineData[UT,SP];
+          gRes.Units.RefreshUnitsSpeed;
 
         finally
           directiveSubData.Free;

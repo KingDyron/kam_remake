@@ -129,6 +129,7 @@ type
     destructor Destroy; override;
 
     procedure ResetToDefaults;
+    procedure RefreshUnitsSpeed;
 
     property Items[aType: TKMUnitType]: TKMUnitSpec read GetItem; default;
     property SerfCarry[aType: TKMWareType; aDir: TKMDirection]: TKMAnimLoop read GetSerfCarry;
@@ -634,7 +635,7 @@ begin
   //ExportCSV(ExeDir + 'units.original.csv');
   ResetToDefaults;//needs to be here, because we need the machines speed to set up.
   PatchUnitSpec;
-
+  RefreshUnitsSpeed;
   //ExportCSV(ExeDir + 'units.remake.csv');
   //Halt;
 end;
@@ -664,6 +665,8 @@ begin
   aLoadStream.CheckMarker('UnitsCustomData');
   aLoadStream.Read(TH_TROOP_COST, SizeOF(TH_TROOP_COST));
   aLoadStream.Read(SIEGE_SCRIPT_DATA, SizeOF(SIEGE_SCRIPT_DATA));
+  //after loading custom siege data we need to reload the speed of the units
+  RefreshUnitsSpeed;
 end;
 
 
@@ -700,14 +703,6 @@ begin
 
   if fItems[utVagabond].fUnitDat.Speed = DEF_MOUNTED_SPEED then
     fItems[utVagabond].fUnitDat.Speed := 40;
-
-  for UT := UNIT_MIN to UNIT_MAX do
-  begin
-    fItems[UT].fUnitSpecInfo.StepsPerTile          := Round(1    / fItems[UT].Speed);
-    fItems[UT].fUnitSpecInfo.StepsPerTileDiag      := Round(1.41 / fItems[UT].Speed);
-    fItems[UT].fUnitSpecInfo.StepsPerTileStorm     := Round(1    / (fItems[UT].Speed * STORM_SPEEDUP));
-    fItems[UT].fUnitSpecInfo.StepsPerTileStormDiag := Round(1.41 / (fItems[UT].Speed * STORM_SPEEDUP));
-  end;
 end;
 
 
@@ -789,6 +784,20 @@ begin
         spProjectileDefence : SIEGE_SCRIPT_DATA[UT,SP] := 3;
       end;
     end;
+
+end;
+
+procedure TKMResUnits.RefreshUnitsSpeed;
+var
+  UT: TKMUnitType;
+begin
+  for UT := UNIT_MIN to UNIT_MAX do
+  begin
+    fItems[UT].fUnitSpecInfo.StepsPerTile          := Round(1    / fItems[UT].Speed);
+    fItems[UT].fUnitSpecInfo.StepsPerTileDiag      := Round(1.41 / fItems[UT].Speed);
+    fItems[UT].fUnitSpecInfo.StepsPerTileStorm     := Round(1    / (fItems[UT].Speed * STORM_SPEEDUP));
+    fItems[UT].fUnitSpecInfo.StepsPerTileStormDiag := Round(1.41 / (fItems[UT].Speed * STORM_SPEEDUP));
+  end;
 
 end;
 
