@@ -812,8 +812,8 @@ begin
       utRogue:        Result := ROGUE_AIMING_DELAY_MIN + KaMRandom(ROGUE_AIMING_DELAY_ADD{$IFDEF DBG_RNG_SPY}, 'TKMUnitWarrior.GetAimingDelay 3'{$ENDIF});
 
       utCatapult,
-      utBallista:        Result := gRes.Units.GetSiegeAimingDelayMin(UnitType)
-                                    + KaMRandom(gRes.Units.GetSiegeAimingDelayAdd(UnitType){$IFDEF DBG_RNG_SPY}, 'TKMUnitWarrior.GetAimingDelay 4'{$ENDIF});
+      utBallista:        Result := SIEGE_SCRIPT_DATA[UnitType, spAimingDelayMin]
+                                    + KaMRandom(SIEGE_SCRIPT_DATA[UnitType, spAimingDelayAdd]{$IFDEF DBG_RNG_SPY}, 'TKMUnitWarrior.GetAimingDelay 4'{$ENDIF});
     else
       raise Exception.Create('Unknown shooter');
     end;
@@ -855,8 +855,6 @@ const
   RANGE_BOWMAN_MIN      = 4; // KaM: Archer will shoot a unit standing 4 tiles away, but not one standing 3 tiles away
   RANGE_CROSSBOWMAN_MIN = 4;
   RANGE_ROGUE_MIN       = 4;
-  RANGE_CATAPULT_MIN    = 6;
-  RANGE_BALLISTA_MIN    = 5;
 begin
   Result := 0;
   if IsRanged then
@@ -864,8 +862,8 @@ begin
       utBowman:       Result := RANGE_BOWMAN_MIN;
       utCrossbowman:  Result := RANGE_CROSSBOWMAN_MIN;
       utRogue:        Result := RANGE_ROGUE_MIN;
-      utCatapult:     Result := RANGE_CATAPULT_MIN;
-      utBallista:     Result := RANGE_BALLISTA_MIN;
+      utCatapult,
+      utBallista:     Result := SIEGE_SCRIPT_DATA[UnitType, spRangeMin];
     else
       raise Exception.Create('Unknown shooter');
     end;
@@ -877,8 +875,6 @@ const
   RANGE_CROSSBOWMAN_MAX = 10.99; // KaM: Unit standing 10 tiles from us will be shot, 11 tiles not
   RANGE_BOWMAN_MAX      = 10.99;
   RANGE_ROGUE_MAX       = 10.99;
-  RANGE_BALLISTA_MAX    = 10.99;
-  RANGE_CATAPULT_MAX    = 10.99;
 begin
   Result := 0;
   if IsRanged then
@@ -886,8 +882,8 @@ begin
       utBowman:       Result := RANGE_BOWMAN_MAX;
       utCrossbowman:  Result := RANGE_CROSSBOWMAN_MAX;
       utRogue:        Result := RANGE_ROGUE_MAX;
-      utCatapult:     Result := RANGE_CATAPULT_MAX;
-      utBallista:     Result := RANGE_BALLISTA_MAX;
+      utCatapult,
+      utBallista:     Result := SIEGE_SCRIPT_DATA[UnitType, spRangeMax] + 0.99;
     else
       raise Exception.Create('Unknown shooter');
     end;

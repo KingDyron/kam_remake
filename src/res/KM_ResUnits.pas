@@ -41,7 +41,7 @@ type
 
   TKMUnitScriptParam = (spAttack,         spAttackHorse, spDefence,     spSpeed,              spHitPoints,
                         spUnitDamage,     spHouseDamage, spStagesCount, spProjectileDefence,  spAimingDelayMin,
-                        spAimingDelayAdd);
+                        spAimingDelayAdd, spRangeMin,    spRangeMax);
   //we only need it for the catapult and ballista
   TKMUnitScriptData = array[utCatapult..utBallista, TKMUnitScriptParam] of Integer;
 
@@ -137,9 +137,6 @@ type
     property CRC: Cardinal read fCRC; //Return hash of all values
 
     procedure ExportCSV(const aPath: UnicodeString);
-
-    function GetSiegeAimingDelayMin(aUnitType : TKMUnitType) : Byte;
-    function GetSiegeAimingDelayAdd(aUnitType : TKMUnitType) : Byte;
 
     procedure SaveCustomData(aSaveStream: TKMemoryStream);
     procedure LoadCustomData(aLoadStream: TKMemoryStream);
@@ -709,19 +706,6 @@ begin
     fItems[utVagabond].fUnitDat.Speed := 40;
 end;
 
-function TKMResUnits.GetSiegeAimingDelayMin(aUnitType : TKMUnitType) : Byte;
-begin
-  Assert(aUnitType in WARRIOR_MACHINE);
-  Result := SIEGE_SCRIPT_DATA[aUnitType, spAimingDelayMin];
-
-end;
-
-function TKMResUnits.GetSiegeAimingDelayAdd(aUnitType : TKMUnitType) : Byte;
-begin
-  Assert(aUnitType in WARRIOR_MACHINE);
-  Result := SIEGE_SCRIPT_DATA[aUnitType, spAimingDelayAdd];
-end;
-
 
 procedure TKMResUnits.ExportCSV(const aPath: UnicodeString);
 var
@@ -800,6 +784,8 @@ begin
         spStagesCount       : SIEGE_SCRIPT_DATA[UT,SP] := 5;
         spAimingDelayMin    : SIEGE_SCRIPT_DATA[UT,SP] := IfThen(UT = utBallista, 12, 12);
         spAimingDelayAdd    : SIEGE_SCRIPT_DATA[UT,SP] := IfThen(UT = utBallista, 8, 16);
+        spRangeMin          : SIEGE_SCRIPT_DATA[UT,SP] := IfThen(UT = utBallista, 5, 6);
+        spRangeMax          : SIEGE_SCRIPT_DATA[UT,SP] := 10;//all units have 10 range
       end;
     end;
 
