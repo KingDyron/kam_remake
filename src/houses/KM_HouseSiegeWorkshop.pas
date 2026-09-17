@@ -14,7 +14,9 @@ type
     fMachinesStage : array[1..2] of Byte;
     procedure ConstructSiege(aUnitType : TKMunitType);
     function GetSiegeMachineIndex(aUnitType : TKMunitType) : Integer;
+    function GetSiegeTypeOfIndex(aIndex : Integer) : TKMunitType;
     function GetStoredMachines(aIndex : Integer) : Word;
+    function GetMaxStages(aIndex : Integer) : Integer;
     procedure FinishOrder(aOrderID : Byte);
   protected
 
@@ -38,9 +40,10 @@ type
 
 implementation
 uses
-  SysUtils, TypInfo,
+  SysUtils, Math,
   KM_ScriptingEvents,
   KM_HandsCollection,
+  KM_Resource,
   KM_RenderPool,
   KM_UnitWarrior;
 
@@ -102,6 +105,24 @@ begin
     utBallista: Result := 2;
   end;
 
+end;
+
+function TKMHouseSiegeWorkshop.GetSiegeTypeOfIndex(aIndex: Integer): TKMUnitType;
+begin
+  Result := utNone;
+  Assert(aIndex in [1, 2], 'Unknown index of the machine');
+
+  If aIndex = 1 then
+    Result := utCatapult
+  else
+  If aIndex = 2 then
+    Result := utBallista;
+
+end;
+
+function TKMHouseSiegeWorkshop.GetMaxStages(aIndex: Integer): Integer;
+begin
+  Result := gRes.Units[GetSiegeTypeOfIndex(aIndex)].StagesCount;
 end;
 
 function TKMHouseSiegeWorkshop.GetStoredMachines(aIndex : Integer) : Word;
@@ -191,7 +212,7 @@ begin
   Assert(aOrderID <> 0, 'Wrong order index:' + IntToStr(aOrderID) );
   Inc(fMachinesStage[aOrderID]);
 
-  If fMachinesStage[aOrderID] >= 5 then
+  If fMachinesStage[aOrderID] >= GetMaxStages(aOrderID) then
     FinishOrder(aOrderID);
 end;
 
@@ -203,7 +224,7 @@ begin
   if fBuildState = hbsDone then
     for I := 1 to 2 do
       if fMachinesStage[I] > 0 then
-        gRenderPool.AddHouseSiegeParts(HouseType, fPosition, I, fMachinesStage[I], gHands[Owner].GameFlagColor);
+        gRenderPool.AddHouseSiegeParts(HouseType, fPosition, I, Min(fMachinesStage[I], 4), gHands[Owner].GameFlagColor);
 
   //render carpenter on top of the siege parts
   if CurrentAction <> nil then

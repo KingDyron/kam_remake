@@ -74,6 +74,7 @@ type
     function GetAttackHorse : Integer;
     function GetDefence : Integer;
     function GetProjectileDefence : Integer;
+    function GetStagesCount : Word;
   public
     constructor Create(aType: TKMUnitType);
     function IsValid: Boolean;
@@ -93,6 +94,7 @@ type
     property Sight: SmallInt read fUnitDat.Sight;
     property UnitDamage: Integer read GetUnitDamage;
     property HouseDamage: Integer read GetHouseDamage;
+    property StagesCount : Word read GetStagesCount;
     //Additional properties added by Remake
     property ArmyPower: Single read GetArmyPower;
     property AllowedPassability: TKMTerrainPassability read GetAllowedPassability;
@@ -531,6 +533,13 @@ begin
     Result := 1;
 end;
 
+function TKMUnitSpec.GetStagesCount : Word;
+begin
+  If fUnitType in [utCatapult, utBallista] then
+    Result := SIEGE_SCRIPT_DATA[fUnitType, spStagesCount]
+  else
+    raise Exception.Create('Unexpected type');
+end;
 
 function TKMUnitSpec.GetEffectiveSpeed(aMovementType: TKMUnitMoveType): Single;
 begin
