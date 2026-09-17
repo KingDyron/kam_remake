@@ -11,9 +11,11 @@ type
   TKMHouseSiegeWorkshop = class(TKMHouseWFlagPoint)
   private
     fStoredMachines : array[1..2] of Word;
+    fMachinesStage : array[1..2] of Byte;
     procedure ConstructSiege(aUnitType : TKMunitType);
     function GetSiegeMachineIndex(aUnitType : TKMunitType) : Integer;
     function GetStoredMachines(aIndex : Integer) : Word;
+    procedure FinishOrder(aOrderID : Byte);
   protected
 
   public
@@ -22,7 +24,7 @@ type
     procedure Save(SaveStream: TKMemoryStream); override;
 
     function HasOrders : Boolean;
-    procedure FinishOrder(aOrderID : Byte);
+    procedure FinishStage(aOrderID : Byte);
     function PickOrder : Byte; override;
     function SiegeEquip(aUnitType : TKMunitType; aAmount : Integer): Integer;
 
@@ -42,27 +44,41 @@ uses
 
 { TKMHouseWoodcutters }
 constructor TKMHouseSiegeWorkshop.Create(aUID: Integer; aHouseType: TKMHouseType; PosX, PosY: Integer; aOwner: TKMHandID; aBuildState: TKMHouseBuildState);
+var I : Integer;
 begin
   inherited;
 
-  fStoredMachines[1] := 0;
-  fStoredMachines[2] := 0;
+  for I := 1 to 2 do
+  begin
+    fStoredMachines[I]  := 0;
+    fMachinesStage[I]   := 0;
+  end;
 end;
 
 
 constructor TKMHouseSiegeWorkshop.Load(LoadStream: TKMemoryStream);
 begin
   inherited;
+  LoadStream.PlaceMarker('House Siege Workshop');
+  LoadStream.Read(fStoredMachines, SizeOf(fStoredMachines));
+  LoadStream.Read(fMachinesStage, SizeOf(fMachinesStage));
 end;
 
 procedure TKMHouseSiegeWorkshop.Save(SaveStream: TKMemoryStream);
 begin
   inherited;
+  SaveStream.CheckMarker('House Siege Workshop');
+  SaveStream.Write(fStoredMachines, SizeOf(fStoredMachines));
+  SaveStream.Write(fMachinesStage, SizeOf(fMachinesStage));
 end;
 
 function TKMHouseSiegeWorkshop.ObjToString(const aSeparator: string = '|'): string;
 begin
-  Result := inherited ObjToString(aSeparator);
+  Result := inherited ObjToString(aSeparator) +
+                      Format('Catapult stage: %d%s' + 'Ballista stage: %d%s' +
+                             'Catapults stored: %d%s' + 'Ballistas stored: %d%s',
+                             [fMachinesStage[1], aSeparator, fMachinesStage[2], aSeparator,
+                              fStoredMachines[1], aSeparator, fStoredMachines[2], aSeparator]);
 end;
 
 function TKMHouseSiegeWorkshop.HasOrders: Boolean;
@@ -72,7 +88,6 @@ begin
   for I := 1 to 4 do
     If WareOrder[I] > 0 then
       Exit(true);
-
 end;
 
 function TKMHouseSiegeWorkshop.GetSiegeMachineIndex(aUnitType: TKMUnitType): Integer;
@@ -128,7 +143,7 @@ var
 begin
   Result := 0;
   //we need those resources to create a machine
-  If not ( (CheckWareIn(wtTimber) >= 5) and (CheckWareIn(wtIron) >= 5) ) then
+  If not ( (CheckWareIn(wtTimber) >= 1) and (CheckWareIn(wtIron) >= 1) ) then
     Exit;
   if WARFARE_ORDER_SEQUENTIAL then
     for I := 0 to 3 do
@@ -163,8 +178,17 @@ end;
 
 procedure TKMHouseSiegeWorkshop.FinishOrder(aOrderID : Byte);
 begin
+  ConstructSiege(MACHINES_ORDER[aOrderID]);
+  fMachinesStage[aOrderID] := 0;
+end;
+
+procedure TKMHouseSiegeWorkshop.FinishStage(aOrderID : Byte);
+begin
   Assert(aOrderID <> 0, 'Wrong order index:' + IntToStr(aOrderID) );
-  ConstructSiege(MACHINES_ORDER[aOrderID])
+  Inc(fMachinesStage[aOrderID]);
+
+  If fMachinesStage[aOrderID] >= 5 then
+    FinishOrder(aOrderID);
 end;
 
 end.

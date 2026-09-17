@@ -410,7 +410,7 @@ begin
               gsHorseBreeder: ResAcquired := fBeastID <> 0;
               gsSiegeCarpenter: begin
                                   ResAcquired := false;
-                                  TKMHouseSiegeWorkshop(Home).FinishOrder(WorkPlan.OrderID);
+                                  TKMHouseSiegeWorkshop(Home).FinishStage(WorkPlan.OrderID);
                                 end;
               else            ResAcquired := True;
             end;

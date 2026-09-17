@@ -454,8 +454,8 @@ begin
                       if (aHome = htSiegeWorkshop) then
                       begin
                         OrderID := aUnit.Home.PickOrder;
-                        ResourcePlan(wtTimber,5,wtIron,5,wtNone);
-                        for I := 1 to 6 do
+                        ResourcePlan(wtTimber,1,wtIron,1,wtNone);
+                        for I := 1 to 2 do
                         begin
                           SubActAdd(haWork2,3);
                           SubActAdd(haWork3,1);
