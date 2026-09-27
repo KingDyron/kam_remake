@@ -30,6 +30,9 @@ type
 
     fOnAddProjectileToRenderPool: TKMRenderPoolAddProjectileEvent;
 
+    function GetJitter(aProjType : TKMProjectileType) : Single;
+    function GetJitterHouse(aProjType : TKMProjectileType) : Single;
+
     function AddItem(const aStart,aAim,aEnd: TKMPointF; aSpeed, aArc, aMaxLength: Single; aProjType: TKMProjectileType; aOwner: TKMUnit): Word;
     procedure RemItem(aIndex: Integer);
     function ProjectileVisible(aIndex: Integer): Boolean;
@@ -88,6 +91,29 @@ procedure TKMProjectiles.RemItem(aIndex: Integer);
 begin
   gHands.CleanUpUnitPointer(fItems[aIndex].fOwner);
   fItems[aIndex].fSpeed := 0;
+end;
+
+
+function TKMProjectiles.GetJitter(aProjType: TKMProjectileType): Single;
+begin
+  If aProjType = ptCatapultRock then
+    Result := SIEGE_SCRIPT_DATA[utCatapult, spJitter] / 100
+  else
+  If aProjType = ptBallistaBolt then
+    Result := SIEGE_SCRIPT_DATA[utBallista, spJitter] / 100
+  else
+    Result := PROJECTILE_JITTER[aProjType];
+end;
+
+function TKMProjectiles.GetJitterHouse(aProjType: TKMProjectileType): Single;
+begin
+  If aProjType = ptCatapultRock then
+    Result := SIEGE_SCRIPT_DATA[utCatapult, spJitterHouse] / 100
+  else
+  If aProjType = ptBallistaBolt then
+    Result := SIEGE_SCRIPT_DATA[utBallista, spJitterHouse] / 100
+  else
+  Result := PROJECTILE_JITTER_HOUSE[aProjType];
 end;
 
 
@@ -157,7 +183,7 @@ begin
 
   if timeToHit <> 0 then
   begin
-    jitter := PROJECTILE_JITTER[aProjType]
+    jitter := GetJitter(aProjType)
             + KMLength(KMPOINTF_ZERO, targetVector) * PROJECTILE_PREDICT_JITTER[aProjType];
 
     //Calculate the target position relative to start position (the 0;0)
@@ -200,8 +226,8 @@ begin
   speed := PROJECTILE_SPEED[aProjType] + KaMRandomS2(0.05{$IFDEF DBG_RNG_SPY}, 'TKMProjectiles.AimTarget 5'{$ENDIF});
 
   aim := KMPointF(aTarget.GetRandomCellWithin);
-  target.X := aim.X + KaMRandomS2(PROJECTILE_JITTER_HOUSE[aProjType]{$IFDEF DBG_RNG_SPY}, 'TKMProjectiles.AimTarget 6'{$ENDIF}); //So that arrows were within house area, without attitude to tile corners
-  target.Y := aim.Y + KaMRandomS2(PROJECTILE_JITTER_HOUSE[aProjType]{$IFDEF DBG_RNG_SPY}, 'TKMProjectiles.AimTarget 7'{$ENDIF});
+  target.X := aim.X + KaMRandomS2(GetJitterHouse(aProjType){$IFDEF DBG_RNG_SPY}, 'TKMProjectiles.AimTarget 6'{$ENDIF}); //So that arrows were within house area, without attitude to tile corners
+  target.Y := aim.Y + KaMRandomS2(GetJitterHouse(aProjType){$IFDEF DBG_RNG_SPY}, 'TKMProjectiles.AimTarget 7'{$ENDIF});
 
   //Calculate the arc, less for shorter flights
   distanceToHit := GetLength(aStart.X - target.X, aStart.Y - target.Y);

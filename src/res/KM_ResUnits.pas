@@ -41,7 +41,7 @@ type
 
   TKMUnitScriptParam = (spAttack,         spAttackHorse, spDefence,     spSpeed,              spHitPoints,
                         spUnitDamage,     spHouseDamage, spStagesCount, spProjectileDefence,  spAimingDelayMin,
-                        spAimingDelayAdd, spRangeMin,    spRangeMax);
+                        spAimingDelayAdd, spRangeMin,    spRangeMax, spJitter, spJitterHouse);
   //we only need it for the catapult and ballista
   TKMUnitScriptData = array[utCatapult..utBallista, TKMUnitScriptParam] of Integer;
 
@@ -780,15 +780,17 @@ begin
         spSpeed             : SIEGE_SCRIPT_DATA[UT,SP] := fItems[UT].fUnitDat.Speed;
         spHitPoints         : SIEGE_SCRIPT_DATA[UT,SP] := fItems[UT].fUnitDat.HitPoints;
         spUnitDamage        : SIEGE_SCRIPT_DATA[UT,SP] := IfThen(UT = utBallista, 2, 1);
-        spHouseDamage       : SIEGE_SCRIPT_DATA[UT,SP] := IfThen(UT = utCatapult, 19, 6);
+        spHouseDamage       : SIEGE_SCRIPT_DATA[UT,SP] := IfThen(UT = utCatapult, 12, 4);
         spStagesCount       : SIEGE_SCRIPT_DATA[UT,SP] := 5;
-        spAimingDelayMin    : SIEGE_SCRIPT_DATA[UT,SP] := IfThen(UT = utBallista, 12, 12);
-        spAimingDelayAdd    : SIEGE_SCRIPT_DATA[UT,SP] := IfThen(UT = utBallista, 8, 16);
+        spAimingDelayMin    : SIEGE_SCRIPT_DATA[UT,SP] := IfThen(UT = utBallista, 16, 8);
+        spAimingDelayAdd    : SIEGE_SCRIPT_DATA[UT,SP] := IfThen(UT = utBallista, 10, 8);
         spRangeMin          : SIEGE_SCRIPT_DATA[UT,SP] := IfThen(UT = utBallista, 5, 6);
         spRangeMax          : SIEGE_SCRIPT_DATA[UT,SP] := 10;//all units have 10 range
+        spProjectileDefence : SIEGE_SCRIPT_DATA[UT,SP] := 1;
+        spJitter            : SIEGE_SCRIPT_DATA[UT,SP] := IfThen(UT = utBallista, 19, 90);
+        spJitterHouse       : SIEGE_SCRIPT_DATA[UT,SP] := IfThen(UT = utBallista, 40, 180);
       end;
     end;
-
 end;
 
 procedure TKMResUnits.RefreshUnitsSpeed;
