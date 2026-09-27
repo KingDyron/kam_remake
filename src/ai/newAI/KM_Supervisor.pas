@@ -469,10 +469,11 @@ const
   sqr_INTEREST_DISTANCE_House = 20*20;
   sqr_MAX_DISTANCE_FROM_HOUSE = 10*10;
   MAX_ATTACKERS_PER_HOUSE = 12;
-  WarriorPrice: array [utMilitia..utVagabond] of Single = (
+  WarriorPrice: array [utMilitia..utBallista] of Single = (
     1.0, 2.0, 3.0, 2.0, 3.0, // utMilitia,      utAxeFighter, utSwordFighter, utBowman,  utCrossbowman,
     2.0, 3.0, 2.0, 3.0,      // utLanceCarrier, utPikeman,    utScout,        utKnight
-    3.5, 1.0, 1.0, 3.5, 1.0  // utBarbarian,    utRebel,      utRogue,        utWarrior, utVagabond
+    3.5, 1.0, 1.0, 3.5, 1.0,  // utBarbarian,    utRebel,      utRogue,        utWarrior, utVagabond
+    2.5, 2.5//utcatapult, utBallista
   );
   OpportunityArr: array [GROUP_TYPE_MIN..GROUP_TYPE_MAX, GROUP_TYPE_MIN..GROUP_TYPE_MAX] of Single = (
     // gtMelee, gtAntiHorse, gtRanged, gtMounted
